@@ -1,0 +1,45 @@
+const users = [
+  {
+    uid: 14313,
+    name:'Mayank Bhootra',
+    todo:10,
+    inProgress:6,
+    completed:8,
+    total:24
+  },
+  {
+    uid: 16454,
+    name:'Vaibhav Manchikanti',
+    todo:7,
+    inProgress:8,
+    completed:10,
+    total:25
+  },
+  {
+    uid: 18534,
+    name:'Manan Sharma',
+    todo:9,
+    inProgress:3,
+    completed:10,
+    total:22
+  },
+  {
+    uid: 20143,
+    name:'Piyush Bansal',
+    todo:8,
+    inProgress:7,
+    completed:13,
+    total:28
+  },
+  {
+    uid: 24653,
+    name:'Aman Gupta',
+    todo:5,
+    inProgress:4,
+    completed:7,
+    total:16
+  },
+]
+
+
+   update(ref(database, 'users1234'),{'node': 123, 'name': 'manan'})
