@@ -3,15 +3,15 @@ import { Avatar, Box, Card, Radio, RadioGroup, Typography, Button, TextField, Di
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { ThemeContext } from '../../App'
 import { blue, green, yellow } from '@mui/material/colors';
-import ResponsiveAppBar from '../../containers/AppBar';
+import ResponsiveAppBar from '../../common/AppBar';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend,} from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import Masonry from '@mui/lab/Masonry';
-import { StackBarProgress } from '../../containers/StackedBarProgress';
-import { LinearBarProgress } from '../../containers/LinearBarProgress';
+import { StackBarProgress } from '../../common/StackedBarProgress';
+import { LinearBarProgress } from '../../common/LinearBarProgress';
 import { getDatabase, ref, onValue} from "firebase/database";
 import app from '../../Firebase';
 
@@ -96,7 +96,7 @@ export const DashBoard = () => {
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
                     <Typography variant="subtitle" fontWeight='600'>Task Progress</Typography>
-                    {['Task Assignment 1'].map((text, index) => (
+                    {['Mayank Bhootra'].map((text, index) => (
                         <Box marginTop='20px'>
                             <Typography variant="subtitle2">{text}</Typography>
                             <LinearBarProgress sx={{ height: '6px', borderRadius: '10px', marginBottom: '20px' }} variant='determinate' value={taskPercentage} />

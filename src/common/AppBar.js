@@ -16,20 +16,25 @@ import { ThemeContext } from '../App';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['Projects', 'Setting', 'Help'];
+const pages = ['Projects', 'Kanban Board'];
 const settings = ['Profile', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
 
   const navigate = useNavigate();
 
-  const handleRedirect = (setting) => {
-    console.log(setting)
+  const handleSetting = (setting) => {
     if(setting === 'Profile'){
       navigate('/profile-setting')
     }
     if(setting === 'Dashboard'){
       navigate('/dashboard')
+    }
+  }
+
+  const handlePages = (page) => {
+    if(page === 'Kanban Board'){
+      navigate('/kanban-board')
     }
   }
 
@@ -67,7 +72,6 @@ function ResponsiveAppBar() {
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: blue[500],
@@ -107,7 +111,7 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page}  onClick= {()=>{handlePages(page)}}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -123,7 +127,6 @@ function ResponsiveAppBar() {
               mr: 2,
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-              fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: blue[500],
@@ -136,13 +139,14 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick= {()=>{handlePages(page)}}
                 sx={{ my: 2, color:mode==='light'?`${blue[500]}`:'#FFF', fontSize:'1.2rem', lineHeight:'2px', display: 'block' }}
               >
                 {page}
               </Button>
             ))}
           </Box>
+          <Button variant='contained' sx={{position:'absolute', right:'500px'}}>Create</Button>
           <NotificationsIcon sx={{color:blue[600], marginRight:'40px'}} />
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
@@ -168,7 +172,7 @@ function ResponsiveAppBar() {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography onClick= {()=>{handleRedirect(setting)}} width='100%' textAlign="left">{setting}</Typography>
+                  <Typography onClick= {()=>{handleSetting(setting)}} width='100%' textAlign="left">{setting}</Typography>
                 </MenuItem>
               ))}
             </Menu>
