@@ -146,7 +146,6 @@ function ResponsiveAppBar() {
               </Button>
             ))}
           </Box>
-          <Button variant='contained' sx={{position:'absolute', right:'500px'}}>Create</Button>
           <NotificationsIcon sx={{color:blue[600], marginRight:'40px'}} />
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">

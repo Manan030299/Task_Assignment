@@ -4,8 +4,7 @@ import { FormControl, TextField, Typography, Drawer, Box, Toolbar, Avatar, Butto
 import { blue } from '@mui/material/colors';
 import HouseIcon from '@mui/icons-material/House';
 import { ThemeContext } from '../../App';
-
-const drawerWidth = 350
+import { digitsRegExp, emailValidRegExp, lowercaseRegExp, minLengthRegExp, specialCharRegExp, uppercaseRegExp } from '../../constant/config';
 
 export const ProfileSetting = () => {
 
@@ -19,11 +18,14 @@ export const ProfileSetting = () => {
         confirmPassword: ''
     })
 
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [profileInput, SetProfileInput] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    })
+
     const [openPass, setOpenPass] = useState(false);
 
     const handleClickOpen = () => {
@@ -34,24 +36,9 @@ export const ProfileSetting = () => {
       setOpenPass(false);
     };
 
-    const handleFNameChange = (e) => {
-        setFirstName(e.target.value)
-    }
-
-    const handleLNameChange = (e) => {
-        setLastName(e.target.value)
-    }
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value)
-    }
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value)
-    }
-
-    const handleConfirmPassChange = (e) => {
-        setConfirmPassword(e.target.value)
+    const onHandleChange = (e) => {
+        const {name, value} = e.target;
+        SetProfileInput({...profileInput, [name]: value})
     }
 
     const handleValidation = () => {
@@ -67,54 +54,47 @@ export const ProfileSetting = () => {
         let isError = false;
         let message = '';
 
-        const emailValidRegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        const uppercaseRegExp = /(?=.*?[A-Z])/;
-        const lowercaseRegExp = /(?=.*?[a-z])/;
-        const digitsRegExp = /(?=.*?[0-9])/;
-        const specialCharRegExp = /(?=.*?[#?!@$%^&*-])/;
-        const minLengthRegExp = /.{8,}/;
-
-        if (!firstName) {
+        if (!profileInput.firstName) {
             validationMessages.firstName = 'Please enter first name'
             isError = true;
         }
 
-        if (!lastName) {
+        if (!profileInput.lastName) {
             validationMessages.lastName = 'Please enter last name'
             isError = true;
         }
 
-        if (!emailValidRegExp.test(email)) {
+        if (!emailValidRegExp.test(profileInput.email)) {
             validationMessages.email = 'Please enter a valid email address'
             isError = true;
         }
 
-        if (!minLengthRegExp.test(password)) {
+        if (!minLengthRegExp.test(profileInput.password)) {
             message = message + 'one 8 characters, '
             isError = true;
         }
 
-        if (!uppercaseRegExp.test(password)) {
+        if (!uppercaseRegExp.test(profileInput.password)) {
             message = message + 'one upper case, '
             isError = true;
         }
 
-        if (!lowercaseRegExp.test(password)) {
+        if (!lowercaseRegExp.test(profileInput.password)) {
             message = message + 'one lower case, '
             isError = true;
         }
 
-        if (!specialCharRegExp.test(password)) {
+        if (!specialCharRegExp.test(profileInput.password)) {
             message = message + 'one special Character, '
             isError = true;
         }
 
-        if (!digitsRegExp.test(password)) {
+        if (!digitsRegExp.test(profileInput.password)) {
             message = message + 'one  number '
             isError = true;
         }
 
-        if (confirmPassword === password) {
+        if (profileInput.confirmPassword === profileInput.password) {
             validationMessages.confirmPassword = ''
         } else {
             validationMessages.confirmPassword = 'Passwords do not match'
@@ -132,9 +112,9 @@ export const ProfileSetting = () => {
             <Drawer
                 variant="permanent"
                 sx={{
-                    width: drawerWidth,
+                    width: 350,
                     flexShrink: 0,
-                    [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box', bgcolor: mode === 'light' ? '' : 'background.default' },
+                    [`& .MuiDrawer-paper`]: { width: 350, boxSizing: 'border-box', bgcolor: mode === 'light' ? '' : 'background.default' },
 
                 }}
             >
@@ -170,17 +150,17 @@ export const ProfileSetting = () => {
                     <FormControl>
                         <Typography marginBottom='20px' variant='h4'>Account Settings</Typography>
                         <Box marginBottom='35px'>
-                            <TextField sx={{ margin: '0px 10px 0px 0px', width: '280px' }} variant='outlined' onChange={handleFNameChange} name='firstName' error={errorMessages.firstName} value={firstName} label='First name' />
-                            <TextField sx={{ margin: '0px 0px 0px 5px', width: '280px' }} variant='outlined' onChange={handleLNameChange} name='lastName' error={errorMessages.lastName} value={lastName} label='Last name' />
+                            <TextField sx={{ margin: '0px 10px 0px 0px', width: '280px' }} variant='outlined' onChange={onHandleChange} name='firstName' error={errorMessages.firstName} value={profileInput.firstName} label='First name' />
+                            <TextField sx={{ margin: '0px 0px 0px 5px', width: '280px' }} variant='outlined' onChange={onHandleChange} name='lastName' error={errorMessages.lastName} value={profileInput.lastName} label='Last name' />
                         </Box>
-                        <TextField sx={{ margin: '0px 0px 25px 0px', width: '575px' }} variant='outlined' onChange={handleEmailChange} type='email' name='email' error={errorMessages.email} value={email} label='Email address' />
+                        <TextField sx={{ margin: '0px 0px 25px 0px', width: '575px' }} variant='outlined' onChange={onHandleChange} type='email' name='email' error={errorMessages.email} value={profileInput.email} label='Email address' />
                         <Link style={{cursor:'pointer'}} onClick={handleClickOpen} marginBottom='30px'>Change password</Link>
                         <Dialog open={openPass}>
                             <Box sx={{ padding: '30px', display:'flex', flexDirection:'column'}}>
                                 <Typography variant='h5' marginBottom='10px'>Change password</Typography>
                                 <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' type='password' name='password' label='Current Password' />
-                                <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' onChange={handlePasswordChange} type='password' name='password' error={errorMessages.password} value={password} label='New Password' />
-                                <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' onChange={handleConfirmPassChange} type='password' name='confirmPassword' error={errorMessages.confirmPassword} value={confirmPassword} label='Confirm New password' />
+                                <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' onChange={onHandleChange} type='password' name='password' error={errorMessages.password} value={profileInput.password} label='New Password' />
+                                <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' onChange={onHandleChange} type='password' name='confirmPassword' error={errorMessages.confirmPassword} value={profileInput.confirmPassword} label='Confirm New password' />
                                 <Box sx={{display:'flex', justifyContent:'center', marginTop:'5px'}}>
                                     <Button type='submit' variant="contained" sx={{ padding: '10px', fontSize: '1rem', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', width: '130px', margin: '0px 10px 0px 0px' }}>Confirm</Button>
                                     <Button type='submit' onClick={handleClose} variant="contained" sx={{ padding: '10px', fontSize: '1rem', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', width: '130px', margin: '0px 0px 0px 10px' }}>Cancel</Button>

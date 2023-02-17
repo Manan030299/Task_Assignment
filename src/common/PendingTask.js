@@ -9,7 +9,6 @@ import {
     Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { blue, yellow } from '@mui/material/colors';
 
 ChartJS.register(
     CategoryScale,
@@ -45,18 +44,19 @@ export const data = {
         {
             barThickness: 40,
             label: 'To-Do',
-            backgroundColor: yellow[600],
+            backgroundColor: '#f2d245',
+            
             data: ['7', '12', '10']
         },
         {
             barThickness: 40,
             label: 'In-Progress',
-            backgroundColor: blue[500],
+            backgroundColor: '#2385ff',
             data: ['6', '4', '2'],
         },
     ],
 };
 
-export const StackBarProgress = () => {
+export const PendingTask = () => {
     return <Bar options={options} data={data} />;
 }

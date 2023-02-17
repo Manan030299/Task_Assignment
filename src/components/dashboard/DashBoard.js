@@ -1,20 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Avatar, Box, Card, Radio, RadioGroup, Typography, Button, TextField, Divider, Toolbar, Grid } from '@mui/material'
-import FormControlLabel from '@mui/material/FormControlLabel';
 import { ThemeContext } from '../../App'
-import { blue, green, yellow } from '@mui/material/colors';
 import ResponsiveAppBar from '../../common/AppBar';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend,} from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import Masonry from '@mui/lab/Masonry';
-import { StackBarProgress } from '../../common/StackedBarProgress';
+import { PendingTask } from '../../common/PendingTask';
 import { LinearBarProgress } from '../../common/LinearBarProgress';
 import { getDatabase, ref, onValue} from "firebase/database";
 import app from '../../Firebase';
-
+import { Avatar } from '@mui/material'
+import { Box } from '@mui/material'
+import { Toolbar } from '@mui/material'
+import { Card } from '@mui/material'
+import { Typography } from '@mui/material'
+import { Grid } from '@mui/material'
+import { FormGroup } from '@mui/material';
+import { Checkbox } from '@mui/material';
+import { Divider } from '@mui/material'
+import { TextField } from '@mui/material'
+import { Button } from '@mui/material'
+import { FormControlLabel } from '@mui/material';
+import { blue } from '@mui/material/colors';
+import { green } from '@mui/material/colors';
+import { yellow } from '@mui/material/colors';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import Masonry from '@mui/lab/Masonry';
 
 export const DashBoard = () => {
     
@@ -26,16 +37,16 @@ export const DashBoard = () => {
             const data = snapshot.val();
             setTeamMembers(data)
         });
-    },[database])
+    },[])
 
     const users = Object.values(teamMembers)
     console.log(users)
 
-    var usersName = users.map(obj => {
-        return obj.firstName + ' '+ obj.lastName;
-      });
+    const usersList = users.map(user => {
+        return user.firstName + ' '+ user.lastName;
+    });
 
-      console.log(usersName)
+    const createTask = ['Task Assignment 1', 'Task Assignment 2', 'Task Assignment 3']
 
     const taskCompleted = 100
     const taskPercentage = 75
@@ -69,21 +80,21 @@ export const DashBoard = () => {
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
                     <Typography variant="subtitle" fontWeight='600'>Task</Typography>
                     <Box marginTop='10px'>
-                        <RadioGroup name="use-radio-group" defaultValue="first">
+                        <FormGroup name="use-radio-group" defaultValue="first">
                             <Box marginBottom='15px'>
-                                {['Task Assignment 1', 'Task Assignment 2', 'Task Assignment 3'].map((text, index) => (
+                                {createTask.map((task, index) => (
                                     <Grid container xs={12}>
                                         <Grid item xs={7}>
-                                            <FormControlLabel value={text} label={text} control={<Radio />} />
+                                            <FormControlLabel value={task} label={task} control={<Checkbox sx={{borderRadius:'50%'}} />} />
                                         </Grid>
                                         <Grid item xs={5}>
-                                            <Avatar sx={{ height: '36px', width: '36px', marginTop: '3px', marginLeft: '5px', bgcolor: index % 2 === 0 ? blue[500] : yellow[600], fontSize: '1.2rem' }}>{text[0]}</Avatar>
+                                            <Avatar sx={{ height: '36px', width: '36px', marginTop: '3px', marginLeft: '5px', bgcolor: index % 2 === 0 ? blue[500] : yellow[600], fontSize: '1.2rem' }}>{task[0]}</Avatar>
                                         </Grid>
                                         <Typography variant='caption' color='#abacb7' marginLeft='32px' marginTop='-10px'>Thursday, Feb 23</Typography>
                                     </Grid>
                                 ))}
                             </Box>
-                        </RadioGroup>
+                        </FormGroup>
                         <Divider />
                         <Box marginTop='20px'>
                             <Box marginBottom='20px'>
@@ -115,7 +126,7 @@ export const DashBoard = () => {
                         <Typography variant="subtitle" fontWeight='600'>Maximun no. of pending Tasks</Typography>
                     </Box>
                     <Box height='225px' display='flex' justifyContent='center' >
-                        <StackBarProgress />
+                        <PendingTask />
                     </Box>
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
@@ -139,13 +150,13 @@ export const DashBoard = () => {
                         <Typography variant="subtitle" fontWeight='600'>Team Members</Typography>
                     </Box>
                     <Box marginTop='10px'>
-                        {usersName.map((text, index) => (
+                        {usersList.map((user, index) => (
                             <Grid container xs={12} marginBottom='20px'>
                                 <Grid item xs={1.5}>
-                                    <Avatar sx={{ bgcolor: index % 2 === 0 ? blue[500] : yellow[600] }}>{text[0]}</Avatar>
+                                    <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{user[0]}</Avatar>
                                 </Grid>
                                 <Grid item xs={10.5}>
-                                    <Typography marginTop='8px' marginLeft='10px'>{text}</Typography>
+                                    <Typography marginTop='8px' marginLeft='10px'>{user}</Typography>
                                 </Grid>
                             </Grid>
                         ))}

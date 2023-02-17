@@ -1,11 +1,16 @@
-import { FormControl, FormControlLabel, TextField, Checkbox, Link, Button, Typography} from '@mui/material'
 import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Box from '@mui/material/Box'
 import LightWave from '../../assets/Images/lightModeWave.png'
 import DarkWave from '../../assets/Images/darkModeWave.png'
 import { ThemeContext } from '../../App'
-
+import { FormControl } from '@mui/material'
+import { FormControlLabel } from '@mui/material'
+import { TextField } from '@mui/material'
+import { Checkbox } from '@mui/material'
+import { Link } from '@mui/material'
+import { Button} from '@mui/material'
+import { Typography} from '@mui/material'
+import{ Box }from '@mui/material'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import app from '../../Firebase'
 import { toast } from 'react-hot-toast'
@@ -14,8 +19,11 @@ export const SignIn = () => {
   
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [signinInput, setSigninInput] = useState({
+    email:'',
+    password:''
+  })
+
   const [errorMessages, setErrorMessages] = useState({
     email:'',
     password:''
@@ -23,14 +31,9 @@ export const SignIn = () => {
 
   const mode = useContext(ThemeContext)
 
-  const handleEmailChange = (e) => {
-
-    setEmail(e.target.value)
-  }
-
-  const handlePasswordChange = (e) => {
-
-    setPassword(e.target.value)
+  const onHandleChange = (e) => {
+    const {name, value} = e.target;
+    setSigninInput({...signinInput, [name]: value})
   }
 
   const auth = getAuth(app);
@@ -42,11 +45,11 @@ export const SignIn = () => {
       email:'',
       password:''
     }
-    if(!email){
+    if(!signinInput.email){
       validationMessages.email = 'Please enter email address'
       isError = true
     }
-    if(!password){
+    if(!signinInput.password){
       validationMessages.password = 'Please enter password'
       isError = true
     }
@@ -55,22 +58,17 @@ export const SignIn = () => {
       setErrorMessages(validationMessages)
     }
     if(!isError){
-      signInWithEmailAndPassword(auth, email, password)
+      signInWithEmailAndPassword(auth, signinInput.email, signinInput.password)
       .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
-        setEmail('');
-        setPassword('');
         toast.success('User Logged Successfully')
         console.log(user);
         // ...
       })
       .catch((error) => {
-        const errorCode = error.code;
-        toast.error(errorCode, 'Hello')
         const errorMessage = error.message;
-        toast.error(errorMessage, 'Hell1')
-        toast.error('User not Found')
+        toast.error(errorMessage)
       });
     }  
   }
@@ -85,8 +83,8 @@ export const SignIn = () => {
         <FormControl sx={{zIndex:'2'}}>
           <Typography variant="h2" marginBottom='10px'>Sign in</Typography>
           <Typography variant="subtitle1" marginBottom='20px'>Sign in and start managing your candidates!</Typography>
-          <TextField sx={{ margin: '0px 0px 10px 0px'}} helperText={errorMessages.email} type='email' name='email' value={email} onChange={handleEmailChange} label="Email Address" variant="outlined" />
-          <TextField sx={{ margin: '10px 0px 0px 0px'}} helperText={errorMessages.password} type='text' name='password' value={password} onChange={handlePasswordChange} id="outlined-basic" label="Password" variant="outlined" />
+          <TextField sx={{ margin: '0px 0px 10px 0px'}} helperText={errorMessages.email} type='email' name='email' value={signinInput.email} onChange={onHandleChange} label="Email Address" variant="outlined" />
+          <TextField sx={{ margin: '10px 0px 0px 0px'}} helperText={errorMessages.password} type='text' name='password' value={signinInput.password} onChange={onHandleChange} id="outlined-basic" label="Password" variant="outlined" />
           <Box >
             <FormControlLabel sx={{ marginRight: '45px' }} control={<Checkbox />} label="Remember me" />
             <Link color={mode === 'light' ? 'black' : '#20DF7F'} underline='none' href=''>Forgot password?</Link>

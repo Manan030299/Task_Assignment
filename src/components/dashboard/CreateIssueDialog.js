@@ -1,13 +1,29 @@
-import React from 'react'
-import { Typography, Box, Divider, Dialog, FormControl, Select, MenuItem, Link, Grid, Button, FormControlLabel, OutlinedInput, FormHelperText, } from '@mui/material';
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import React, { useState } from 'react'
+import { Typography, Box, Divider, Dialog, FormControl, Switch, styled, Select, MenuItem, Link, Grid, Button, FormControlLabel, Avatar, OutlinedInput, FormHelperText, } from '@mui/material';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BoltIcon from '@mui/icons-material/Bolt';
+import DoneIcon from '@mui/icons-material/Done';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import { Editor} from "react-draft-wysiwyg";
+import { EditorState ,convertToRaw } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
 
-export const CreateIssueDialog = () => {
+export const CreateIssueDialog = (props) => {
+    const {openCreate, handleClose, onHandleChange, createIssueInput, projectList, assigneeList, reporterList, writeUserData} = props
 
-    const project = ['Project 1', 'Project 2', 'Project 3']
+    const [editorState, setEditorState] = useState(EditorState.createEmpty())
+    
+     const onEditorStateChange = (value) => {
+        setEditorState(value)
+        const descriptionValue = convertToRaw(value.getCurrentContent())
+        onHandleChange('description', descriptionValue.blocks[0].text)
+    }
 
-    const user = ['Manan Sharma', 'Vaibhav Manchikanti', 'Mayank Bhootra']
 
     const Android12Switch = styled(Switch)(({ theme }) => ({
         padding: 8,
@@ -44,7 +60,7 @@ export const CreateIssueDialog = () => {
 
     return (
         <>
-            <Dialog open={false} maxWidth='md'>
+            <Dialog open={openCreate} maxWidth='md'>
                 <Box padding='30px 20px' boxShadow="0px 4px 4px 0px #00000040">
                     <Typography variant='h5' fontWeight='600'>Create issue</Typography>
                 </Box>
@@ -52,19 +68,19 @@ export const CreateIssueDialog = () => {
                     <Box marginBottom='20px'>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Project</Typography>
-                            <Select sx={{ marginBottom: '20px' }}>
-                                {project.map((projectName) => (
-                                    <MenuItem >{projectName}</MenuItem>
+                            <Select onChange={(e) => {onHandleChange('project',e.target.value)}} defaultValue={'Project 1'} name="project" value={createIssueInput.project} sx={{ marginBottom: '20px' }}>
+                                {projectList.map((projectName) => (
+                                    <MenuItem value={projectName}>{projectName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Issue type</Typography>
-                            <Select defaultValue='story' sx={{ marginBottom: '20px' }}>
-                                <MenuItem value='story'>Story</MenuItem>
-                                <MenuItem value='task'>Task</MenuItem>
-                                <MenuItem value='bug'>Bug</MenuItem>
-                                <MenuItem value='epic'>Epic</MenuItem>
+                            <Select onChange={(e) => {onHandleChange('issueType',e.target.value)}} name="issueType" value={createIssueInput.issueType} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'initial',}}}>
+                                <MenuItem value='story'><BookmarkIcon sx={{ bgcolor: '#30ca3b', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px',marginRight:'10px' }} />Story</MenuItem>
+                                <MenuItem value='task'><DoneIcon sx={{ bgcolor: '#3e9fdf', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Task</MenuItem>
+                                <MenuItem value='bug'><FiberManualRecordIcon sx={{ bgcolor: '#fc3324', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Bug</MenuItem>
+                                <MenuItem value='epic'><BoltIcon sx={{ bgcolor: '#aa08e5', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Epic</MenuItem>
                             </Select>
                             <Link href>Learn more</Link>
                         </FormControl>
@@ -73,38 +89,48 @@ export const CreateIssueDialog = () => {
                     <Box marginTop='20px'>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Status</Typography>
-                            <Select defaultValue='todo' sx={{ marginBottom: '20px' }}>
+                            <Select onChange={(e) => {onHandleChange('status',e.target.value)}} name="status" value={createIssueInput.status} defaultValue='todo' sx={{ marginBottom: '20px' }}>
                                 <MenuItem value='todo'>TO DO</MenuItem>
-                                <MenuItem value='in-progress'>IN PROGRESS</MenuItem>
+                                <MenuItem value='inprogress'>IN PROGRESS</MenuItem>
                                 <MenuItem value='completed'>COMPLETED</MenuItem>
                             </Select>
                         </FormControl>
                         <FormControl sx={{ marginBottom: '20px' }} fullWidth>
                             <Typography variant='subtitle1'>Summary</Typography>
-                            <OutlinedInput />
+                            <OutlinedInput onChange={(e) => {onHandleChange('summary',e.target.value)}} name="summary" value={createIssueInput.summary} />
                             <FormHelperText>This is the issue's initial status upon creation</FormHelperText>
                         </FormControl>
                         <Box sx={{ marginBottom: '20px' }}>
                             <Typography variant='subtitle1'>Description</Typography>
                             <Box border='1px solid #00000040' borderRadius='10px' padding='10px'>
-                                <Editor />
+                            <Editor editorState={editorState} wrapperClassName="demo-wrapper" editorClassName="demo-editor" onEditorStateChange={onEditorStateChange} value={draftToHtml(convertToRaw(editorState.getCurrentContent()))} />
                             </Box>
                         </Box>
                         <FormControl sx={{ marginBottom: '20px' }} fullWidth>
                             <Typography variant='subtitle1'>Assignee</Typography>
-                            <Select sx={{ marginBottom: '10px' }}>
-                                {user.map((userAssigne) => (
-                                    <MenuItem >{userAssigne}</MenuItem>
+                            <Select onChange={(e) => {onHandleChange('assignee',e.target.value)}} name="assignee" value={createIssueInput.assignee} sx={{ marginBottom: '10px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
+                                {assigneeList.map((assignee, index) => (
+                                    <MenuItem value={assignee}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee[0][0]}</Avatar>{assignee}</MenuItem>
                                 ))}
                             </Select>
                             <Link>Assign to me</Link>
                         </FormControl>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Reporter</Typography>
-                            <Select sx={{ marginBottom: '20px' }}>
-                                {user.map((userAssigne) => (
-                                    <MenuItem >{userAssigne}</MenuItem>
+                            <Select onChange={(e) => {onHandleChange('reporter',e.target.value)}} name="reporter" value={createIssueInput.reporter} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
+                                {reporterList.map((reporter, index) => (
+                                    <MenuItem value={reporter}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter[0][0]}</Avatar>{reporter}</MenuItem>
                                 ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth>
+                            <Typography variant='subtitle1'>Priority</Typography>
+                            <Select onChange={(e) => {onHandleChange('priority',e.target.value)}} name="priority" value={createIssueInput.priority} defaultValue='Medium' sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'flex-end',}}}>
+                                <MenuItem value='Highest'><KeyboardDoubleArrowUpIcon />Highest</MenuItem>
+                                <MenuItem value='High'><KeyboardArrowUpIcon />High</MenuItem>
+                                <MenuItem value='Medium'><DragHandleIcon />Medium</MenuItem>
+                                <MenuItem value='Low'><KeyboardArrowDownIcon />Low</MenuItem>
+                                <MenuItem value='Lowest'><KeyboardDoubleArrowDownIcon />Lowest</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
@@ -118,10 +144,10 @@ export const CreateIssueDialog = () => {
                             />
                         </Grid>
                         <Grid xs={2}>
-                            <Button>Cancel</Button>
+                            <Button onClick={handleClose}>Cancel</Button>
                         </Grid>
                         <Grid xs={1}>
-                            <Button variant='contained'>Create</Button>
+                            <Button variant='contained' onClick={writeUserData}>Create</Button>
                         </Grid>
                     </Grid>
                 </Box>

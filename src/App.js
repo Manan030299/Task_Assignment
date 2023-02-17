@@ -66,8 +66,6 @@ function App() {
                     '& .MuiOutlinedInput-notchedOutline': {
                       borderRadius: "10px",
                       color: '#FFF',
-                      // backgroundColor:'#224957',
-                      margin: '0',
                     }
                   }
                 }
