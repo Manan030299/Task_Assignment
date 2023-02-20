@@ -21,7 +21,6 @@ import DoneIcon from '@mui/icons-material/Done';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { Editor } from 'react-draft-wysiwyg'
 import { EditorState ,convertToRaw } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
 
 export const UpdateIssue = (props) => {
     const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate } = props;
@@ -97,10 +96,10 @@ export const UpdateIssue = (props) => {
                         </FormControl>
                         <Box>
                             <Grid gap={3} display='flex' justifyContent='right'>
-                                <Grid>
+                                <Grid item>
                                     <Button variant='contained' onClick={handleUpdate}>Modify</Button>
                                 </Grid>
-                                <Grid>
+                                <Grid item>
                                     <Button variant='contained' onClick={handleUpdateClose}>Cancel</Button>
                                 </Grid>
                             </Grid>

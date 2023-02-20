@@ -9,6 +9,7 @@ import './App.css';
 
 import { Toaster } from 'react-hot-toast';
 import {Routing } from './Routes/Routes';
+import { red } from '@mui/material/colors';
 
 export const ThemeContext = createContext()
 
@@ -34,6 +35,7 @@ function App() {
                   text: {
                     primary: '#224957',
                     // secondary: blue[500],
+                    error: red[500],
                   },
                   action: {
                     active: '#FFF'

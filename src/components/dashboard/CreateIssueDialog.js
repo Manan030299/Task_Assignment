@@ -137,16 +137,16 @@ export const CreateIssueDialog = (props) => {
                 </Box>
                 <Box padding='30px 50px' borderTop='3px solid #00000040'>
                     <Grid container xs={12}>
-                        <Grid xs={9}>
+                        <Grid item xs={9}>
                             <FormControlLabel
                                 control={<Android12Switch defaultChecked />}
                                 label="Copy to next issue"
                             />
                         </Grid>
-                        <Grid xs={2}>
+                        <Grid item xs={2}>
                             <Button onClick={handleClose}>Cancel</Button>
                         </Grid>
-                        <Grid xs={1}>
+                        <Grid item xs={1}>
                             <Button variant='contained' onClick={writeUserData}>Create</Button>
                         </Grid>
                     </Grid>

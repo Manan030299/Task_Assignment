@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LightWave from '../../assets/Images/lightModeWave.png'
 import DarkWave from '../../assets/Images/darkModeWave.png'
@@ -21,13 +21,23 @@ export const SignIn = () => {
 
   const [signinInput, setSigninInput] = useState({
     email:'',
-    password:''
+    password:'',
   })
-
   const [errorMessages, setErrorMessages] = useState({
     email:'',
     password:''
   })
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(()=>{
+    if(sessionStorage.getItem('uid')|| localStorage.getItem('uid')){
+      navigate('/dashboard')
+      }
+  },[])
+
+  const handleCheck = () => {
+    setRememberMe(!rememberMe)
+  }
 
   const mode = useContext(ThemeContext)
 
@@ -63,7 +73,13 @@ export const SignIn = () => {
         // Signed in 
         const user = userCredential.user;
         toast.success('User Logged Successfully')
-        console.log(user);
+        if(rememberMe){
+          localStorage.setItem("uid", user.uid)
+        }
+        if(!rememberMe){
+          sessionStorage.setItem("uid", user.uid)
+        }
+        navigate('/dashboard')
         // ...
       })
       .catch((error) => {
@@ -71,6 +87,7 @@ export const SignIn = () => {
         toast.error(errorMessage)
       });
     }  
+
   }
 
   const goToSignUp = () => {
@@ -86,7 +103,7 @@ export const SignIn = () => {
           <TextField sx={{ margin: '0px 0px 10px 0px'}} helperText={errorMessages.email} type='email' name='email' value={signinInput.email} onChange={onHandleChange} label="Email Address" variant="outlined" />
           <TextField sx={{ margin: '10px 0px 0px 0px'}} helperText={errorMessages.password} type='text' name='password' value={signinInput.password} onChange={onHandleChange} id="outlined-basic" label="Password" variant="outlined" />
           <Box >
-            <FormControlLabel sx={{ marginRight: '45px' }} control={<Checkbox />} label="Remember me" />
+            <FormControlLabel sx={{ marginRight: '45px' }} control={<Checkbox name='rememberMe' checked={rememberMe} onChange={handleCheck} />} label="Remember me" />
             <Link color={mode === 'light' ? 'black' : '#20DF7F'} underline='none' href=''>Forgot password?</Link>
           </Box>
           <Button onClick={handleValidation} type='submit' variant="contained" sx={{ padding: '10px', fontSize: '1rem', margin: '10px 0', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', marginBottom: '20px' }}>Login</Button>
