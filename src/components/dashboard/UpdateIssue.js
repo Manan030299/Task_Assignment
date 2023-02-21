@@ -94,6 +94,7 @@ export const UpdateIssue = (props) => {
                                 <MenuItem value='Lowest'><KeyboardDoubleArrowDownIcon />Lowest</MenuItem>
                             </Select>
                         </FormControl>
+                            <Typography marginTop='-10px' marginBottom='10px' variant='body2'>Created on: {selectedIssue.createdOn}</Typography>
                         <Box>
                             <Grid gap={3} display='flex' justifyContent='right'>
                                 <Grid item>

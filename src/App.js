@@ -42,6 +42,7 @@ function App() {
                   },
                   background: {
                     default: '#FFF',
+                    light: '#90caf9',
                   },
                 }
                 : {
@@ -56,9 +57,8 @@ function App() {
                   background: {
                     default: '#093545',
                     secondary: '#FFF',
-                    
+                    dark:'#42a5f5',
                   },
-                  
                 }),
             },
             components: {

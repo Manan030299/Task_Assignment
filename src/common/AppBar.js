@@ -30,6 +30,10 @@ function ResponsiveAppBar() {
     if(setting === 'Dashboard'){
       navigate('/dashboard')
     }
+    if(setting === 'Logout'){
+      localStorage.clear()||sessionStorage.clear();
+      navigate('/Login')
+    }
   }
 
   const handlePages = (page) => {

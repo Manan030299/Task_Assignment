@@ -20,7 +20,7 @@ export const KanbanBoard = () => {
 
     const navigate = useNavigate();
 
-    const [projectList, setProjectList] = useState(['Project 1', 'Project 2', 'Project 3']);
+    const [projectList, setProjectList] = useState(['Project 1']);
     const [assigneeList, setAssigneeList] = useState(['Manan Sharma', 'Vaibhav Manchikanti', 'Mayank Bhootra']);
     const [reporterList, setReportedList] = useState(['Manan Sharma', 'Vaibhav Manchikanti', 'Mayank Bhootra']);
     const [todoList, setTodoList] = useState([]);
@@ -31,6 +31,13 @@ export const KanbanBoard = () => {
     const [userPermissions, setUserPermissions] = useState([])
     const [invitedUsers, setInvitedUsers] = useState([])
 
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const d = new Date();
+    let month = months[d.getMonth()];
+    let day = days[d.getDay()];
+    const date = day + ', ' + d.getDate() + ' ' + month + ' ' + d.getFullYear() + ' | ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds()
+
     const [createIssueInput, setCreateIssueInput] = useState({
         project: '',
         issueType: '',
@@ -39,8 +46,11 @@ export const KanbanBoard = () => {
         description: '',
         assignee: '',
         reporter: '',
-        priority: ''
+        priority: '', 
+        createdOn: date
     })
+
+    console.log(createIssueInput.createdOn)
 
     useEffect(() => {
         if (sessionStorage.getItem('uid')) {
@@ -227,10 +237,23 @@ export const KanbanBoard = () => {
                                 <Typography variant='subtitle2'>TO DO</Typography>
                             </Card>
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px' }}>
-                                {todoList.map((issue) => (
-                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '10px', marginBottom: '20px' }}>
-                                        <Typography>{issue.summary}</Typography>
-                                        <Box>{issue.issueType}</Box>
+                                {todoList.map((issue, index) => (
+                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
+                                        <Typography variant='h6' fontWeight='600'>{issue.summary}</Typography>
+                                        <Grid container xs={12} marginTop='10px'>
+                                            <Grid item xs={3}>
+                                                <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+
+                                            </Grid>
+                                            <Grid item xs={3}>
+
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
+                                            </Grid>
+                                        </Grid>
                                     </Card>
                                 ))}
                             </Card>
@@ -240,9 +263,23 @@ export const KanbanBoard = () => {
                                 <Typography variant='subtitle2'>IN PROGRESS</Typography>
                             </Card>
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px' }}>
-                                {inProgressList.map((issue) => (
-                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '10px', marginBottom: '20px' }}>
-                                        <Typography>{issue.summary}</Typography>
+                                {inProgressList.map((issue, index) => (
+                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
+                                        <Typography variant='h6' fontWeight='600'>{issue.summary}</Typography>
+                                        <Grid container xs={12} marginTop='10px'>
+                                            <Grid item xs={3}>
+                                                <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+
+                                            </Grid>
+                                            <Grid item xs={3}>
+
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
+                                            </Grid>
+                                        </Grid>
                                     </Card>
                                 ))}
                             </Card>
@@ -252,9 +289,23 @@ export const KanbanBoard = () => {
                                 <Typography variant='subtitle2'>COMPLETED</Typography>
                             </Card>
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px' }}>
-                                {completedList.map((issue) => (
-                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '10px', marginBottom: '20px' }}>
-                                        <Typography>{issue.summary}</Typography>
+                                {completedList.map((issue, index) => (
+                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
+                                        <Typography variant='h6' fontWeight='600'>{issue.summary}</Typography>
+                                        <Grid container xs={12} marginTop='10px'>
+                                            <Grid item xs={3}>
+                                                <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
+                                            </Grid>
+                                            <Grid item xs={3}>
+
+                                            </Grid>
+                                            <Grid item xs={3}>
+
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
+                                            </Grid>
+                                        </Grid>
                                     </Card>
                                 ))}
                             </Card>
@@ -272,7 +323,7 @@ export const KanbanBoard = () => {
                         <Typography variant='h4'>{userData.firstName + ' ' + userData.lastName}</Typography>
                         <Typography variant='h6'>{userData.email}</Typography>
                         <Typography variant='h4'>Sorry, you don't have access for this page</Typography>
-                        <Button variant='contained' sx={{marginTop:'10px', borderRadius:'10px'}} >Go back</Button>
+                        <Button variant='contained' onClick={() => navigate('/dashboard')} sx={{ marginTop: '10px', borderRadius: '10px' }} >Go back</Button>
                     </Box>
                 </Box>
             )}
