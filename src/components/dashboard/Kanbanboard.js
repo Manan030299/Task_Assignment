@@ -14,15 +14,17 @@ import { toast } from 'react-hot-toast';
 import { CreateIssueDialog } from './CreateIssueDialog';
 import { UpdateIssue } from './UpdateIssue';
 import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded';
+import InviteUserDialog from './InviteUserDialog';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
 export const KanbanBoard = () => {
 
     const navigate = useNavigate();
 
+    const assigneList = ['']
+
     const [projectList, setProjectList] = useState(['Project 1']);
-    const [assigneeList, setAssigneeList] = useState(['Manan Sharma', 'Vaibhav Manchikanti', 'Mayank Bhootra']);
-    const [reporterList, setReportedList] = useState(['Manan Sharma', 'Vaibhav Manchikanti', 'Mayank Bhootra']);
     const [todoList, setTodoList] = useState([]);
     const [inProgressList, setInprogressList] = useState([]);
     const [completedList, setCompletedList] = useState([]);
@@ -30,9 +32,12 @@ export const KanbanBoard = () => {
     const [isUserHasAccess, setIsUserHasAccess] = useState(true);
     const [userPermissions, setUserPermissions] = useState([])
     const [invitedUsers, setInvitedUsers] = useState([])
+    const [openCreate, setOpenCreate] = useState(false);
+    const [openInviteDialog, setOpenInviteDialog] = useState(false)
+    const [inviteUserList, setInviteUserList] = useState([])
 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const d = new Date();
     let month = months[d.getMonth()];
     let day = days[d.getDay()];
@@ -46,11 +51,9 @@ export const KanbanBoard = () => {
         description: '',
         assignee: '',
         reporter: '',
-        priority: '', 
+        priority: '',
         createdOn: date
     })
-
-    console.log(createIssueInput.createdOn)
 
     useEffect(() => {
         if (sessionStorage.getItem('uid')) {
@@ -68,6 +71,7 @@ export const KanbanBoard = () => {
             const uid = localStorage.getItem('uid')
             onValue(ref(database, 'users/' + uid), (snapshot) => {
                 const user = snapshot.val();
+                setUserData(user)
                 checkIsUserHasPermission(user.email)
                 onValue(ref(database, 'permissions/' + user.role), (snapshot) => {
                     const permission = snapshot.val();
@@ -80,8 +84,9 @@ export const KanbanBoard = () => {
     const checkIsUserHasPermission = (email) => {
         onValue(ref(database, 'invitedUser/'), (snapshot) => {
             const invitedUsersList = Object.values(snapshot.val());
+            checkIsUserInvite(invitedUsersList)
             const isUserPresent = invitedUsersList.filter(inviteUser => {
-                return inviteUser.email === email
+                return inviteUser.email === email;
             })
             setInvitedUsers(invitedUsersList)
             if (!isUserPresent.length) {
@@ -90,6 +95,18 @@ export const KanbanBoard = () => {
         });
     }
 
+    const checkIsUserInvite = (invitedUsersList) => {
+        onValue(ref(database, 'users/'), (snapshot) => {
+            const userList = Object.values(snapshot.val());
+            const invitedUserEmail = invitedUsersList.map(invitedUser => {
+                return invitedUser.email;
+            });
+            const inviteUser = userList.filter(user => {
+                return !invitedUserEmail.includes(user.email)
+            })
+            setInviteUserList(inviteUser);
+        });
+    }
 
     useEffect(() => {
         onValue(ref(database, '/createIssue/'), (snapshot) => {
@@ -166,9 +183,6 @@ export const KanbanBoard = () => {
         setOpenUpdateIssue(false);
     };
 
-
-    const [openCreate, setOpenCreate] = useState(false);
-
     const handleOpen = () => {
         setOpenCreate(true);
     };
@@ -177,11 +191,23 @@ export const KanbanBoard = () => {
         setOpenCreate(false);
     };
 
+    const handleOpenInviteDialog = () => {
+        setOpenInviteDialog(true);
+    }
+
+    const handleCloseInviteDialog = () => {
+        setOpenInviteDialog(false);
+    }
+
+    const handleCardOption = () => {
+
+    }
+
     const mode = useContext(ThemeContext)
 
     return (
         <> {isUserHasAccess ?
-            (<Box sx={{ display: 'flex', height: '100vh', color: 'text.primary', background: mode === 'light' ? '#dde1ec' : '', }}>
+            (<Box sx={{ display: 'flex', minHeight: '100vh', color: 'text.primary', bgcolor: mode === 'light' ? '#dde1ec' : '', }}>
                 <ResponsiveAppBar />
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                     <Toolbar />
@@ -204,13 +230,13 @@ export const KanbanBoard = () => {
                             </Box>
                             <Box display='inline-flex' marginLeft='10px' marginTop='-2px'>
                                 {invitedUsers.map((name, index) => (
-                                    <Tooltip arrow title={name}>
+                                    <Tooltip arrow title={name.firstName + ' ' + name.lastName}>
                                         <AvatarGroup sx={{ marginLeft: '2.5px' }}>
                                             <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{name.firstName[0]}</Avatar>
                                         </AvatarGroup>
                                     </Tooltip>
                                 ))}
-                                {userPermissions.manage_user ? (<Avatar sx={{ marginTop: '2px', marginLeft: '5px' }}><PersonAddAlt1Icon /></Avatar>) : ('')}
+                                {userPermissions.manage_user ? (<Avatar sx={{ marginTop: '2px', marginLeft: '5px', cursor: 'pointer' }} onClick={handleOpenInviteDialog}><PersonAddAlt1Icon /></Avatar>) : ('')}
 
                             </Box>
                         </Box>
@@ -236,10 +262,17 @@ export const KanbanBoard = () => {
                             <Card sx={{ textAlign: 'Left', borderTopLeftRadius: '10px', borderTopRightRadius: '10px', padding: '10px' }}>
                                 <Typography variant='subtitle2'>TO DO</Typography>
                             </Card>
-                            <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px' }}>
+                            <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px', }}>
                                 {todoList.map((issue, index) => (
-                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
-                                        <Typography variant='h6' fontWeight='600'>{issue.summary}</Typography>
+                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px', }}>
+                                        <Grid container xs={12}>
+                                            <Grid item xs={10}>
+                                                <Typography variant='h6' fontWeight='500'>{issue.summary}</Typography>
+                                            </Grid>
+                                            <Grid item xs={2}>
+                                                <Button onClick={handleCardOption}><MoreVertIcon /></Button>
+                                            </Grid>
+                                        </Grid>
                                         <Grid container xs={12} marginTop='10px'>
                                             <Grid item xs={3}>
                                                 <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
@@ -251,7 +284,9 @@ export const KanbanBoard = () => {
 
                                             </Grid>
                                             <Grid item xs={3}>
-                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
+                                                <Tooltip arrow title={issue.assignee}>
+                                                    <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
+                                                </Tooltip>
                                             </Grid>
                                         </Grid>
                                     </Card>
@@ -265,7 +300,14 @@ export const KanbanBoard = () => {
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px' }}>
                                 {inProgressList.map((issue, index) => (
                                     <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
-                                        <Typography variant='h6' fontWeight='600'>{issue.summary}</Typography>
+                                        <Grid container xs={12}>
+                                            <Grid item xs={10}>
+                                                <Typography variant='h6' fontWeight='500'>{issue.summary}</Typography>
+                                            </Grid>
+                                            <Grid item xs={2}>
+                                                <Button onClick={handleCardOption}><MoreVertIcon /></Button>
+                                            </Grid>
+                                        </Grid>
                                         <Grid container xs={12} marginTop='10px'>
                                             <Grid item xs={3}>
                                                 <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
@@ -276,9 +318,9 @@ export const KanbanBoard = () => {
                                             <Grid item xs={3}>
 
                                             </Grid>
-                                            <Grid item xs={3}>
+                                            <Tooltip arrow title={issue.assignee}>
                                                 <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
-                                            </Grid>
+                                            </Tooltip>
                                         </Grid>
                                     </Card>
                                 ))}
@@ -291,7 +333,14 @@ export const KanbanBoard = () => {
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px' }}>
                                 {completedList.map((issue, index) => (
                                     <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
-                                        <Typography variant='h6' fontWeight='600'>{issue.summary}</Typography>
+                                        <Grid container xs={12}>
+                                            <Grid item xs={10}>
+                                                <Typography variant='h6' fontWeight='500'>{issue.summary}</Typography>
+                                            </Grid>
+                                            <Grid item xs={2}>
+                                                <Button onClick={handleCardOption}><MoreVertIcon /></Button>
+                                            </Grid>
+                                        </Grid>
                                         <Grid container xs={12} marginTop='10px'>
                                             <Grid item xs={3}>
                                                 <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
@@ -302,18 +351,21 @@ export const KanbanBoard = () => {
                                             <Grid item xs={3}>
 
                                             </Grid>
-                                            <Grid item xs={3}>
+                                            <Tooltip arrow title={issue.assignee}>
                                                 <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
-                                            </Grid>
+                                            </Tooltip>
                                         </Grid>
                                     </Card>
                                 ))}
                             </Card>
                         </Grid>
                     </Grid>
-                    <UpdateIssue handleUpdateOpen={openUpdateIssue} handleUpdateClose={handleCloseUpdate} selectedIssue={selectedIssue} handleIssueChange={handleIssueChange} handleUpdate={handleUpdate} />
+                    <UpdateIssue handleUpdateOpen={openUpdateIssue} handleUpdateClose={handleCloseUpdate} selectedIssue={selectedIssue} handleIssueChange={handleIssueChange} handleUpdate={handleUpdate} invitedUsers={invitedUsers} />
                     <Box margin='10px'>
-                        <CreateIssueDialog openCreate={openCreate} handleClose={handleClose} onHandleChange={onHandleChange} createIssueInput={createIssueInput} projectList={projectList} assigneeList={assigneeList} reporterList={reporterList} writeUserData={writeUserData} />
+                        <CreateIssueDialog openCreate={openCreate} handleClose={handleClose} onHandleChange={onHandleChange} createIssueInput={createIssueInput} projectList={projectList} invitedUsers={invitedUsers} writeUserData={writeUserData} />
+                    </Box>
+                    <Box>
+                        <InviteUserDialog handleCloseInviteDialog={handleCloseInviteDialog} openInviteDialog={openInviteDialog} inviteUserList={inviteUserList} />
                     </Box>
                 </Box>
             </Box>) : (

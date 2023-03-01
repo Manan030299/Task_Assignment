@@ -23,7 +23,7 @@ import { Editor } from 'react-draft-wysiwyg'
 import { EditorState ,convertToRaw } from 'draft-js';
 
 export const UpdateIssue = (props) => {
-    const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate } = props;
+    const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate, invitedUsers } = props;
 
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     
@@ -32,10 +32,6 @@ export const UpdateIssue = (props) => {
        const descriptionValue = convertToRaw(value.getCurrentContent())
        handleIssueChange('description', descriptionValue.blocks[0].text)
    }
-
-    const [assigneeList, setAssigneeList] = useState(['Manan Sharma', 'Vaibhav Manchikanti', 'Mayank Bhootra']);
-    const [reporterList, setReportedList] = useState(['Manan Sharma', 'Vaibhav Manchikanti', 'Mayank Bhootra']);
-
 
     return (
         <>
@@ -71,16 +67,16 @@ export const UpdateIssue = (props) => {
                         <FormControl fullWidth>
                             <InputLabel id="assignee">Assignee</InputLabel>
                             <Select onChange={(e) => handleIssueChange('assignee', e.target.value)} value={selectedIssue.assignee} name="assignee" labelId="assignee" label="Assignee" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
-                                {assigneeList.map((assignee, index) => (
-                                    <MenuItem value={assignee}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee[0][0]}</Avatar>{assignee}</MenuItem>
+                                {invitedUsers.map((assignee, index) => (
+                                    <MenuItem value={assignee.firstName + ' ' + assignee.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                         <FormControl fullWidth>
                             <InputLabel id="reporter">Reporter</InputLabel>
                             <Select onChange={(e) => handleIssueChange('reporter', e.target.value)} value={selectedIssue.reporter} name="reporter" labelId="reporter" label="Reporter" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
-                                {reporterList.map((reporter, index) => (
-                                    <MenuItem value={reporter}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter[0][0]}</Avatar>{reporter}</MenuItem>
+                                {invitedUsers.map((reporter, index) => (
+                                    <MenuItem value={reporter.firstName + ' ' + reporter.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>

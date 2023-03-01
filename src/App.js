@@ -34,7 +34,6 @@ function App() {
                   },
                   text: {
                     primary: '#224957',
-                    // secondary: blue[500],
                     error: red[500],
                   },
                   action: {

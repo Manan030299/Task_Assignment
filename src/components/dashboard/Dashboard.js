@@ -30,6 +30,33 @@ export const DashBoard = () => {
 
     const [teamMembers, setTeamMembers] = useState([])
     const [userPermissions, setUserPermissions] = useState([])
+    const[issueList, setIssueList] = useState([])
+
+    useEffect(() =>{
+        onValue(ref(database, 'createIssue/'), (snapshot) => {
+            const issuesList = Object.values(snapshot.val());
+            const userIssuesList = {}
+            issuesList.forEach(issue => {
+                if(userIssuesList[`${issue.assignee}`] === undefined){
+                    userIssuesList[`${issue.assignee}`] = [];
+                    if(userIssuesList[`${issue.assignee}`][`${issue.status}`] === undefined){
+                        userIssuesList[`${issue.assignee}`][`${issue.status}`] = 1
+                    }else{
+                        userIssuesList[`${issue.assignee}`][`${issue.status}`] += 1
+                    }
+                }else{
+                    if(userIssuesList[`${issue.assignee}`][`${issue.status}`] === undefined){
+                        userIssuesList[`${issue.assignee}`][`${issue.status}`] = 1
+                    }else{
+                        userIssuesList[`${issue.assignee}`][`${issue.status}`] += 1
+                    }
+                }
+            })
+            setIssueList(userIssuesList)
+        });
+    },[])
+
+    const issueUserList = Object.keys(issueList)
 
     const database = getDatabase(app);
     useEffect(() => {
@@ -94,7 +121,7 @@ export const DashBoard = () => {
     const mode = useContext(ThemeContext)
 
     return (
-        <Box sx={{ background: mode === 'light' ? '#dde1ec' : '#093545', boxSizing: 'border-box', width: '100%', minHeight: '100vh' }}>
+        <Box sx={{ background: mode === 'light' ? '#dde1ec' : '#093545', width: '100%', minHeight: '100vh' }}>
             <ResponsiveAppBar />
             <Toolbar />
             <Masonry columns={{ lg: 3, md: 1 }} spacing={2} sx={{ marginTop: '10px' }}>
@@ -128,7 +155,7 @@ export const DashBoard = () => {
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
                     <Typography variant="subtitle" fontWeight='600'>Task Progress</Typography>
-                    {['Mayank Bhootra'].map((text, index) => (
+                    {issueUserList.map((text) => (
                         <Box marginTop='20px'>
                             <Typography variant="subtitle2">{text}</Typography>
                             <LinearBarProgress sx={{ height: '6px', borderRadius: '10px', marginBottom: '20px' }} variant='determinate' value={taskPercentage} />

@@ -14,7 +14,7 @@ import { EditorState ,convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 
 export const CreateIssueDialog = (props) => {
-    const {openCreate, handleClose, onHandleChange, createIssueInput, projectList, assigneeList, reporterList, writeUserData} = props
+    const {openCreate, handleClose, onHandleChange, createIssueInput, projectList, invitedUsers, writeUserData} = props
 
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     
@@ -109,8 +109,8 @@ export const CreateIssueDialog = (props) => {
                         <FormControl sx={{ marginBottom: '20px' }} fullWidth>
                             <Typography variant='subtitle1'>Assignee</Typography>
                             <Select onChange={(e) => {onHandleChange('assignee',e.target.value)}} name="assignee" value={createIssueInput.assignee} sx={{ marginBottom: '10px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
-                                {assigneeList.map((assignee, index) => (
-                                    <MenuItem value={assignee}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee[0][0]}</Avatar>{assignee}</MenuItem>
+                                {invitedUsers.map((assignee, index) => (
+                                    <MenuItem value={assignee.firstName + ' ' + assignee.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
                                 ))}
                             </Select>
                             <Link>Assign to me</Link>
@@ -118,8 +118,8 @@ export const CreateIssueDialog = (props) => {
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Reporter</Typography>
                             <Select onChange={(e) => {onHandleChange('reporter',e.target.value)}} name="reporter" value={createIssueInput.reporter} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
-                                {reporterList.map((reporter, index) => (
-                                    <MenuItem value={reporter}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter[0][0]}</Avatar>{reporter}</MenuItem>
+                                {invitedUsers.map((reporter, index) => (
+                                    <MenuItem value={reporter.firstName + ' ' + reporter.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
