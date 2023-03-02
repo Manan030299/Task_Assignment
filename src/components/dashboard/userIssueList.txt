@@ -1,0 +1,16 @@
+issuesList.forEach(issue => {
+                console.log(issuesList)
+                if(userIssuesList[`${issue.assignee}`] === undefined){
+                    userIssuesList[`${issue.assignee}`] = [];
+                    if(userIssuesList[`${issue.assignee}`][`${issue.status}`] === undefined){
+                        userIssuesList[`${issue.assignee}`][`${issue.status}`] = 1
+                    }else{
+                        userIssuesList[`${issue.assignee}`][`${issue.status}`] += 1
+                    }
+                }else{
+                    if(userIssuesList[`${issue.assignee}`][`${issue.status}`] === undefined){
+                        userIssuesList[`${issue.assignee}`][`${issue.status}`] = 1
+                    }else{
+                        userIssuesList[`${issue.assignee}`][`${issue.status}`] += 1
+                    }
+                }

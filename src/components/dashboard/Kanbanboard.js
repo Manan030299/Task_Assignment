@@ -22,8 +22,6 @@ export const KanbanBoard = () => {
 
     const navigate = useNavigate();
 
-    const assigneList = ['']
-
     const [projectList, setProjectList] = useState(['Project 1']);
     const [todoList, setTodoList] = useState([]);
     const [inProgressList, setInprogressList] = useState([]);
@@ -160,7 +158,6 @@ export const KanbanBoard = () => {
             toast(errorMessage)
         }
         if (!isError) {
-
             const createNewIssue = createIssueInput
             const newPostKey = push(child(ref(database), 'createIssue')).key;
             createNewIssue.id = newPostKey

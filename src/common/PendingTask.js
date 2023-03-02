@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -36,27 +36,54 @@ export const options = {
     },
 };
 
-const labels = ['Mayank', 'Vaibhav', 'Manan'];
+export const PendingTask = ({usersIssue}) => {
 
-export const data = {
-    labels,
-    datasets: [
-        {
-            barThickness: 40,
-            label: 'To-Do',
-            backgroundColor: '#f2d245',
-            
-            data: ['7', '12', '10']
-        },
-        {
-            barThickness: 40,
-            label: 'In-Progress',
-            backgroundColor: '#2385ff',
-            data: ['6', '4', '2'],
-        },
-    ],
-};
+    useEffect(() => {
+        const pendingIssue = {};
+        usersIssue.forEach(issue => {
+            if (pendingIssue[issue.assignee] === undefined) {
+                pendingIssue[issue.assignee] = (issue.todo) + (issue.inprogress)  
+            } else {
+                pendingIssue[issue.assignee] = (issue.todo) + (issue.inprogress)  
+            }
+        });
+        console.log(pendingIssue)
+        const topThreeUsers = {}
+        const PendingIssueList = Object.values(pendingIssue).sort((a,b) => {
+            return b-a
+        })
+        const pendingIssueUser = Object.keys(pendingIssue)
+        for(let key of pendingIssueUser){
+            if(pendingIssue[key] === PendingIssueList[0]){
+                console.log(pendingIssue)
+            }
+            if(pendingIssue[key] === PendingIssueList[1]){
+                console.log(key)
+            }
+            if(pendingIssue[key] === PendingIssueList[2]){
+                console.log(key)
+            }
+        }
 
-export const PendingTask = () => {
+    },[])
+
+    const labels = [] 
+    const data = {
+        labels,
+        datasets: [
+            {
+                barThickness: 40,
+                label: 'To-Do',
+                backgroundColor: '#f2d245',
+                data: []
+            },
+            {
+                barThickness: 40,
+                label: 'In-Progress',
+                backgroundColor: '#2385ff',
+                data: []
+            },
+        ],
+    };
     return <Bar options={options} data={data} />;
 }

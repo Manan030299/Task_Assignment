@@ -1,10 +1,9 @@
 import { Box } from '@mui/material';
 import { Tooltip } from '@mui/material';
-export const LinearBarProgress = (props) => {
-  const{todo, inProgress, completed} = props;
+export const LinearBarProgress = (data) => {
+  const {todo, inProgress, completed} = data
 
   const total = todo + inProgress + completed
-  console.log(total)
   const perTodo = (todo/total*100)
   const perInProgress = (inProgress/total*100)
   const perCompleted = (completed/total*100)

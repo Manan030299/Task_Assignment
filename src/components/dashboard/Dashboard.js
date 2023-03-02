@@ -30,33 +30,33 @@ export const DashBoard = () => {
 
     const [teamMembers, setTeamMembers] = useState([])
     const [userPermissions, setUserPermissions] = useState([])
-    const[issueList, setIssueList] = useState([])
+    const [usersIssue, setUsersIssue] = useState([])
 
-    useEffect(() =>{
+    useEffect(() => {
         onValue(ref(database, 'createIssue/'), (snapshot) => {
-            const issuesList = Object.values(snapshot.val());
-            const userIssuesList = {}
-            issuesList.forEach(issue => {
-                if(userIssuesList[`${issue.assignee}`] === undefined){
-                    userIssuesList[`${issue.assignee}`] = [];
-                    if(userIssuesList[`${issue.assignee}`][`${issue.status}`] === undefined){
-                        userIssuesList[`${issue.assignee}`][`${issue.status}`] = 1
-                    }else{
-                        userIssuesList[`${issue.assignee}`][`${issue.status}`] += 1
+            const data = Object.values(snapshot.val());
+            const issueList = []
+            data.forEach(issue => {
+                const index = issueList.findIndex((issue1, i) => {
+                    return issue1.assignee === issue.assignee
+                })
+                if (index !== -1) {
+                    issueList[index][issue.status] += 1
+                } else {
+                    const issueObj = {
+                        id: issue.id,
+                        assignee: issue.assignee,
+                        todo: 0,
+                        inprogress: 0,
+                        completed: 0
                     }
-                }else{
-                    if(userIssuesList[`${issue.assignee}`][`${issue.status}`] === undefined){
-                        userIssuesList[`${issue.assignee}`][`${issue.status}`] = 1
-                    }else{
-                        userIssuesList[`${issue.assignee}`][`${issue.status}`] += 1
-                    }
+                    issueObj[issue.status] = 1
+                    issueList.push(issueObj)
+                    setUsersIssue(issueList)
                 }
             })
-            setIssueList(userIssuesList)
         });
-    },[])
-
-    const issueUserList = Object.keys(issueList)
+    }, [])
 
     const database = getDatabase(app);
     useEffect(() => {
@@ -66,7 +66,7 @@ export const DashBoard = () => {
         });
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         if (sessionStorage.getItem('uid')) {
             const uid = sessionStorage.getItem('uid')
             onValue(ref(database, 'users/' + uid), (snapshot) => {
@@ -76,7 +76,7 @@ export const DashBoard = () => {
                     setUserPermissions(permission)
                 });
             });
-        }else{
+        } else {
             const uid = localStorage.getItem('uid')
             onValue(ref(database, 'users/' + uid), (snapshot) => {
                 const user = snapshot.val();
@@ -86,7 +86,7 @@ export const DashBoard = () => {
                 });
             });
         }
-    },[])
+    }, [])
 
     const users = Object.values(teamMembers)
 
@@ -155,10 +155,10 @@ export const DashBoard = () => {
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
                     <Typography variant="subtitle" fontWeight='600'>Task Progress</Typography>
-                    {issueUserList.map((text) => (
+                    {usersIssue.map((issue) => (
                         <Box marginTop='20px'>
-                            <Typography variant="subtitle2">{text}</Typography>
-                            <LinearBarProgress sx={{ height: '6px', borderRadius: '10px', marginBottom: '20px' }} variant='determinate' value={taskPercentage} />
+                            <Typography variant="subtitle2">{issue.assignee}</Typography>
+                            <LinearBarProgress todo={issue.todo} inProgress={issue.inprogress} completed={issue.completed} sx={{ height: '6px', borderRadius: '10px', marginBottom: '20px' }} variant='determinate' value={taskPercentage} />
                         </Box>
                     ))}
                 </Card>
@@ -174,7 +174,7 @@ export const DashBoard = () => {
                         <Typography variant="subtitle" fontWeight='600'>Maximun no. of pending Tasks</Typography>
                     </Box>
                     <Box height='225px' display='flex' justifyContent='center' >
-                        <PendingTask />
+                        <PendingTask usersIssue={usersIssue} />        
                     </Box>
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
@@ -221,7 +221,7 @@ export const DashBoard = () => {
                     </Box>
                 </Card>
             </Masonry>
-            
+
         </Box>
     )
 }
