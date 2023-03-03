@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { ThemeContext } from '../../App'
 import ResponsiveAppBar from '../../common/AppBar';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, } from "chart.js";
-import { Pie } from "react-chartjs-2";
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { PendingTask } from '../../common/PendingTask';
 import { LinearBarProgress } from '../../common/LinearBarProgress';
+import { ProgressChart } from '../../common/ProgressChart';
 import { getDatabase, ref, onValue } from "firebase/database";
 import app from '../../Firebase';
 import { Avatar } from '@mui/material'
@@ -48,7 +47,7 @@ export const DashBoard = () => {
                         assignee: issue.assignee,
                         todo: 0,
                         inprogress: 0,
-                        completed: 0
+                        completed: 0,
                     }
                     issueObj[issue.status] = 1
                     issueList.push(issueObj)
@@ -57,7 +56,7 @@ export const DashBoard = () => {
             })
         });
     }, [])
-
+    
     const database = getDatabase(app);
     useEffect(() => {
         onValue(ref(database, 'users/'), (snapshot) => {
@@ -99,24 +98,7 @@ export const DashBoard = () => {
     const taskCompleted = 100
     const taskPercentage = 75
     const percentage = 75;
-    ChartJS.register(ArcElement, Tooltip, Legend,);
-    const data = {
-        datasets: [{
-            data: [9, 11, 10],
-            backgroundColor: [
-                '#f2d245',
-                '#2385ff',
-                '#00a253'
-            ]
-        }],
 
-        // These labels appear in the legend and in the tooltips when hovering different arcs
-        labels: [
-            'ToDo',
-            'In-Progress',
-            'Completed'
-        ]
-    };
 
     const mode = useContext(ThemeContext)
 
@@ -182,7 +164,7 @@ export const DashBoard = () => {
                         <Typography variant="subtitle" fontWeight='600'>Progress</Typography>
                     </Box>
                     <Box height='225px' display='flex' justifyContent='center' >
-                        <Pie data={data} />
+                        <ProgressChart usersIssue={usersIssue} />
                     </Box>
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>

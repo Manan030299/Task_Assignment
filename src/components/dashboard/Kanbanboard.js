@@ -48,6 +48,7 @@ export const KanbanBoard = () => {
         summary: '',
         description: '',
         assignee: '',
+        assigneeId: '',
         reporter: '',
         priority: '',
         createdOn: date

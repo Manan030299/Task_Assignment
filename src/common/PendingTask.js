@@ -36,38 +36,37 @@ export const options = {
     },
 };
 
-export const PendingTask = ({usersIssue}) => {
+export const PendingTask = ({ usersIssue }) => {
+   const [labels, setLabels] = useState([])
+   const [todo, setTodo] = useState([])
+   const [inprogress, setInprogress] = useState([])
 
     useEffect(() => {
-        const pendingIssue = {};
+        const issueData = []
         usersIssue.forEach(issue => {
-            if (pendingIssue[issue.assignee] === undefined) {
-                pendingIssue[issue.assignee] = (issue.todo) + (issue.inprogress)  
+            const index = issueData.findIndex((issue1, i) => {
+                return issue1.assignee === issue.assignee
+            })
+            if (index !== -1) {
+                issueData[index][issue.assigne] += 1
             } else {
-                pendingIssue[issue.assignee] = (issue.todo) + (issue.inprogress)  
+                const issueList = {
+                    id: issue.id,
+                    assignee: issue.assignee,
+                    todo: issue.todo,
+                    inprogress: issue.inprogress,
+                    totalPending: issue.todo + issue.inprogress
+                }
+                issueData.push(issueList)
             }
-        });
-        console.log(pendingIssue)
-        const topThreeUsers = {}
-        const PendingIssueList = Object.values(pendingIssue).sort((a,b) => {
-            return b-a
         })
-        const pendingIssueUser = Object.keys(pendingIssue)
-        for(let key of pendingIssueUser){
-            if(pendingIssue[key] === PendingIssueList[0]){
-                console.log(pendingIssue)
-            }
-            if(pendingIssue[key] === PendingIssueList[1]){
-                console.log(key)
-            }
-            if(pendingIssue[key] === PendingIssueList[2]){
-                console.log(key)
-            }
-        }
+        const topThree = issueData.sort((a,b) => b.totalPending - a.totalPending).slice(0, 3)
 
-    },[])
+        setLabels(topThree.map(issue => issue.assignee))
+        setTodo(topThree.map(issue => issue.todo))
+        setInprogress(topThree.map(issue => issue.inprogress))
+    },[usersIssue])
 
-    const labels = [] 
     const data = {
         labels,
         datasets: [
@@ -75,13 +74,13 @@ export const PendingTask = ({usersIssue}) => {
                 barThickness: 40,
                 label: 'To-Do',
                 backgroundColor: '#f2d245',
-                data: []
+                data: todo
             },
             {
                 barThickness: 40,
                 label: 'In-Progress',
                 backgroundColor: '#2385ff',
-                data: []
+                data: inprogress
             },
         ],
     };
