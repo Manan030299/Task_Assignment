@@ -26,12 +26,23 @@ export const UpdateIssue = (props) => {
     const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate, invitedUsers } = props;
 
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
     const onEditorStateChange = (value) => {
        setEditorState(value)
        const descriptionValue = convertToRaw(value.getCurrentContent())
        handleIssueChange('description', descriptionValue.blocks[0].text)
    }
+
+   const getFormattedDate = (date1) => {
+    const date = new Date(date1)
+    let month = months[date.getMonth()];
+    let day = days[date.getDay()];
+    return day + ', ' + date.getDate() + ' ' + month + ' ' + date.getFullYear() + ' | ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+   }
+
+   console.log(typeof(getFormattedDate(selectedIssue.createdOn)))
 
     return (
         <>
@@ -90,8 +101,9 @@ export const UpdateIssue = (props) => {
                                 <MenuItem value='Lowest'><KeyboardDoubleArrowDownIcon />Lowest</MenuItem>
                             </Select>
                         </FormControl>
-                            <Typography marginTop='-10px' marginBottom='10px' variant='body2'>Created on: {selectedIssue.createdOn}</Typography>
-                        <Box>
+                            <Typography marginTop='0px' marginBottom='10px' variant='body2'>Created on: {getFormattedDate(selectedIssue.createdOn)}</Typography>
+                            <Typography marginTop='0px' marginBottom='10px' variant='body2'>Modified on: {getFormattedDate(selectedIssue.modifiedOn)}</Typography>
+                        <Box marginTop='10px'>
                             <Grid gap={3} display='flex' justifyContent='right'>
                                 <Grid item>
                                     <Button variant='contained' onClick={handleUpdate}>Modify</Button>

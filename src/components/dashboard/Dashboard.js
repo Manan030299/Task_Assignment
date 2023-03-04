@@ -3,9 +3,10 @@ import { ThemeContext } from '../../App'
 import ResponsiveAppBar from '../../common/AppBar';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { PendingTask } from '../../common/PendingTask';
-import { LinearBarProgress } from '../../common/LinearBarProgress';
-import { ProgressChart } from '../../common/ProgressChart';
+import { PendingTask } from './PendingTask';
+import { LinearBarProgress } from './LinearBarProgress'; 
+import { ProgressChart } from './ProgressChart';
+import { WorkCompleted14Days } from './WorkCompleted14Days';
 import { getDatabase, ref, onValue } from "firebase/database";
 import app from '../../Firebase';
 import { Avatar } from '@mui/material'
@@ -36,6 +37,7 @@ export const DashBoard = () => {
             const data = Object.values(snapshot.val());
             const issueList = []
             data.forEach(issue => {
+                console.log(typeof(issue.modifiedOn))
                 const index = issueList.findIndex((issue1, i) => {
                     return issue1.assignee === issue.assignee
                 })
@@ -48,6 +50,8 @@ export const DashBoard = () => {
                         todo: 0,
                         inprogress: 0,
                         completed: 0,
+                        createdOn: issue.createdOn,
+                        modifiedOn: issue.modifiedOn
                     }
                     issueObj[issue.status] = 1
                     issueList.push(issueObj)
@@ -94,11 +98,7 @@ export const DashBoard = () => {
     });
 
     const createTask = ['Task Assignment 1', 'Task Assignment 2', 'Task Assignment 3']
-
-    const taskCompleted = 100
-    const taskPercentage = 75
     const percentage = 75;
-
 
     const mode = useContext(ThemeContext)
 
@@ -140,7 +140,7 @@ export const DashBoard = () => {
                     {usersIssue.map((issue) => (
                         <Box marginTop='20px'>
                             <Typography variant="subtitle2">{issue.assignee}</Typography>
-                            <LinearBarProgress todo={issue.todo} inProgress={issue.inprogress} completed={issue.completed} sx={{ height: '6px', borderRadius: '10px', marginBottom: '20px' }} variant='determinate' value={taskPercentage} />
+                            <LinearBarProgress todo={issue.todo} inProgress={issue.inprogress} completed={issue.completed} sx={{ height: '6px', borderRadius: '10px', marginBottom: '20px' }} variant='determinate' />
                         </Box>
                     ))}
                 </Card>
@@ -168,11 +168,8 @@ export const DashBoard = () => {
                     </Box>
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
-                    <Box marginBottom='20px'>
-                        <Typography variant="subtitle" fontWeight='600'>No. of Tasks completed in the last 14 days</Typography>
-                    </Box>
                     <Box>
-                        <Typography textAlign='center' variant="h3" fontWeight='600'>{taskCompleted}</Typography>
+                        <WorkCompleted14Days usersIssue={usersIssue} />
                     </Box>
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>

@@ -68,7 +68,7 @@ export const CreateIssueDialog = (props) => {
                     <Box marginBottom='20px'>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Project</Typography>
-                            <Select onChange={(e) => {onHandleChange('project',e.target.value)}} defaultValue={'Project 1'} name="project" value={createIssueInput.project} sx={{ marginBottom: '20px' }}>
+                            <Select onChange={(e) => {onHandleChange('project',e.target.value)}} name="project" value={createIssueInput.project} sx={{ marginBottom: '20px' }}>
                                 {projectList.map((projectName) => (
                                     <MenuItem value={projectName}>{projectName}</MenuItem>
                                 ))}
@@ -89,7 +89,7 @@ export const CreateIssueDialog = (props) => {
                     <Box marginTop='20px'>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Status</Typography>
-                            <Select onChange={(e) => {onHandleChange('status',e.target.value)}} name="status" value={createIssueInput.status} defaultValue='todo' sx={{ marginBottom: '20px' }}>
+                            <Select onChange={(e) => {onHandleChange('status',e.target.value)}} name="status" value={createIssueInput.status} sx={{ marginBottom: '20px' }}>
                                 <MenuItem value='todo'>TO DO</MenuItem>
                                 <MenuItem value='inprogress'>IN PROGRESS</MenuItem>
                                 <MenuItem value='completed'>COMPLETED</MenuItem>
@@ -125,7 +125,7 @@ export const CreateIssueDialog = (props) => {
                         </FormControl>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Priority</Typography>
-                            <Select onChange={(e) => {onHandleChange('priority',e.target.value)}} name="priority" value={createIssueInput.priority} defaultValue='Medium' sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'flex-end',}}}>
+                            <Select onChange={(e) => {onHandleChange('priority',e.target.value)}} name="priority" value={createIssueInput.priority} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'flex-end',}}}>
                                 <MenuItem value='Highest'><KeyboardDoubleArrowUpIcon />Highest</MenuItem>
                                 <MenuItem value='High'><KeyboardArrowUpIcon />High</MenuItem>
                                 <MenuItem value='Medium'><DragHandleIcon />Medium</MenuItem>

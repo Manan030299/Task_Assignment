@@ -10,26 +10,19 @@ export const ProgressChart = ({usersIssue}) => {
 
     useEffect(() =>{
         const issueList = usersIssue;
-        console.log(issueList)
 
         let todo = 0
         let inprogress = 0
         let completed = 0
-        issueList.forEach(item => {
-            todo += item.todo;
-            inprogress += item.inprogress;
-            completed += item.completed;
+        issueList.forEach(issue => {
+            todo += issue.todo;
+            inprogress += issue.inprogress;
+            completed += issue.completed;
         });
-  
-        console.log(todo);
-        console.log(inprogress);
-        console.log(completed);
 
         setStatus({todo, inprogress, completed})
           
     },[usersIssue]) 
-
-    console.log(status)
 
     const data = {
         labels: Object.keys(status),

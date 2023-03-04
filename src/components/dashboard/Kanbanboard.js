@@ -3,9 +3,9 @@ import ResponsiveAppBar from '../../common/AppBar';
 import { Typography, Box, Toolbar, FormControl, Select, MenuItem, Grid, Button, Card, Avatar, Tooltip, AvatarGroup } from '@mui/material';
 import { ThemeContext } from '../../App';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { SearchIconWrapper } from '../../common/SearchBar';
-import { Search } from '../../common/SearchBar';
-import { StyledInputBase } from '../../common/SearchBar';
+import { SearchIconWrapper } from './SearchBar';
+import { Search } from './SearchBar';
+import { StyledInputBase } from './SearchBar';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SearchIcon from '@mui/icons-material/Search';
 import { getDatabase, ref, onValue, child, push, update } from "firebase/database";
@@ -34,13 +34,6 @@ export const KanbanBoard = () => {
     const [openInviteDialog, setOpenInviteDialog] = useState(false)
     const [inviteUserList, setInviteUserList] = useState([])
 
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const d = new Date();
-    let month = months[d.getMonth()];
-    let day = days[d.getDay()];
-    const date = day + ', ' + d.getDate() + ' ' + month + ' ' + d.getFullYear() + ' | ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds()
-
     const [createIssueInput, setCreateIssueInput] = useState({
         project: '',
         issueType: '',
@@ -51,7 +44,8 @@ export const KanbanBoard = () => {
         assigneeId: '',
         reporter: '',
         priority: '',
-        createdOn: date
+        createdOn: {},
+        modifiedOn: {}
     })
 
     useEffect(() => {
@@ -137,12 +131,18 @@ export const KanbanBoard = () => {
 
     const handleIssueChange = (name, value) => {
         setSelectedIssue({ ...selectedIssue, [name]: value })
+        
     }
 
     const handleUpdate = () => {
         const updatesIssue = {};
         updatesIssue['/createIssue/' + selectedIssue.id] = selectedIssue;
+        if(updatesIssue){
+            selectedIssue.modifiedOn = new Date()
+        }
+        handleCloseUpdate()
         return update(ref(database), updatesIssue);
+
     }
 
     const writeUserData = () => {
@@ -163,8 +163,11 @@ export const KanbanBoard = () => {
             const newPostKey = push(child(ref(database), 'createIssue')).key;
             createNewIssue.id = newPostKey
             const updates = {};
+            createIssueInput.createdOn = new Date()
             updates['/createIssue/' + createNewIssue.id] = createNewIssue;
             toast('Issue create successfully')
+            setCreateIssueInput('')
+            handleClose()
             return update(ref(database), updates);
         }
     }
@@ -187,6 +190,7 @@ export const KanbanBoard = () => {
 
     const handleClose = () => {
         setOpenCreate(false);
+        setCreateIssueInput('')
     };
 
     const handleOpenInviteDialog = () => {
