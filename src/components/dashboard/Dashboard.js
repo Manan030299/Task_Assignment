@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { ThemeContext } from '../../App'
 import ResponsiveAppBar from '../../common/AppBar';
-import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
 import { PendingTask } from './PendingTask';
 import { LinearBarProgress } from './LinearBarProgress'; 
 import { ProgressChart } from './ProgressChart';
 import { WorkCompleted14Days } from './WorkCompleted14Days';
+import { WeeklyProgress } from './WeeklyProgress';
 import { getDatabase, ref, onValue } from "firebase/database";
 import app from '../../Firebase';
 import { Avatar } from '@mui/material'
@@ -17,7 +16,6 @@ import { Typography } from '@mui/material'
 import { Grid } from '@mui/material'
 import { FormGroup } from '@mui/material';
 import { Checkbox } from '@mui/material';
-import { TextField } from '@mui/material'
 import { Button } from '@mui/material'
 import { FormControlLabel } from '@mui/material';
 import { blue } from '@mui/material/colors';
@@ -31,13 +29,13 @@ export const DashBoard = () => {
     const [teamMembers, setTeamMembers] = useState([])
     const [userPermissions, setUserPermissions] = useState([])
     const [usersIssue, setUsersIssue] = useState([])
+    const [openCreate, setOpenCreate] = useState(false);
 
     useEffect(() => {
         onValue(ref(database, 'createIssue/'), (snapshot) => {
             const data = Object.values(snapshot.val());
             const issueList = []
             data.forEach(issue => {
-                console.log(typeof(issue.modifiedOn))
                 const index = issueList.findIndex((issue1, i) => {
                     return issue1.assignee === issue.assignee
                 })
@@ -98,7 +96,10 @@ export const DashBoard = () => {
     });
 
     const createTask = ['Task Assignment 1', 'Task Assignment 2', 'Task Assignment 3']
-    const percentage = 75;
+   
+    const handleOpen = () => {
+        setOpenCreate(true);
+    };
 
     const mode = useContext(ThemeContext)
 
@@ -127,11 +128,7 @@ export const DashBoard = () => {
                         </FormGroup>
                         {userPermissions.create_tickets ?
                             (<Box marginTop='20px'>
-                                <Box marginBottom='20px'>
-                                    <Typography variant="subtitle" fontWeight='600' marginBottom='10px'>Create New Task</Typography>
-                                </Box>
-                                <TextField multiline fullWidth minRows={4} placeholder='What is the task?' />
-                                <Button variant='contained' fullWidth size='large' sx={{ fontSize: '1rem', marginTop: '20px', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', bgcolor: blue[500], color: 'light' ? '#FFF' : '' }}>Create Task</Button>
+                                <Button variant='contained' onClick={handleOpen} fullWidth size='large' sx={{ fontSize: '1rem', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', bgcolor: blue[500], color: 'light' ? '#FFF' : '' }}>Create Task</Button>
                             </Box>) : ('')}
                     </Box>
                 </Card>
@@ -145,11 +142,7 @@ export const DashBoard = () => {
                     ))}
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
-                    <Typography variant="subtitle" fontWeight='600'>Weekly Progress</Typography>
-                    <Typography variant='body2' sx={{ marginTop: '3px' }} color='#abacb7'>Start from Feb 14 - 21, 2023 </Typography>
-                    <Box height='150px' width='auto' display='flex' flexDirection='column' justifyContent='center' marginTop='20px'>
-                        <CircularProgressbar value={percentage} text={`${percentage}%`} styles={buildStyles({ rotation: 0.50, pathColor: `rgba(0, 150, 0, ${percentage / 100})`, textColor: '#f88', trailColor: '#d6d6d6', backgroundColor: '#3e98c7', })} />
-                    </Box>
+                       <WeeklyProgress usersIssue={usersIssue} />
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
                     <Box marginBottom='10px'>
@@ -200,7 +193,6 @@ export const DashBoard = () => {
                     </Box>
                 </Card>
             </Masonry>
-
         </Box>
     )
 }

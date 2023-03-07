@@ -16,7 +16,7 @@ import { ThemeContext } from '../App';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['Projects', 'Kanban Board'];
+const pages = ['Dashboard', 'Kanban Board'];
 const settings = ['Profile', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -37,6 +37,9 @@ function ResponsiveAppBar() {
   }
 
   const handlePages = (page) => {
+    if(page === 'Dashboard'){
+      navigate('/dashboard')
+    }
     if(page === 'Kanban Board'){
       navigate('/kanban-board')
     }

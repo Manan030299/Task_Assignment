@@ -129,20 +129,15 @@ export const KanbanBoard = () => {
         setCreateIssueInput({ ...createIssueInput, [name]: value })
     }
 
-    const handleIssueChange = (name, value) => {
-        setSelectedIssue({ ...selectedIssue, [name]: value })
-        
-    }
-
     const handleUpdate = () => {
         const updatesIssue = {};
         updatesIssue['/createIssue/' + selectedIssue.id] = selectedIssue;
         if(updatesIssue){
             selectedIssue.modifiedOn = new Date()
         }
+        console.log(updatesIssue)
         handleCloseUpdate()
         return update(ref(database), updatesIssue);
-
     }
 
     const writeUserData = () => {
@@ -174,6 +169,10 @@ export const KanbanBoard = () => {
 
     const [openUpdateIssue, setOpenUpdateIssue] = useState(false);
     const [selectedIssue, setSelectedIssue] = useState('');
+
+    const handleIssueChange = (name, value) => {
+        setSelectedIssue({ ...selectedIssue, [name]: value })    
+    }
 
     const handleOpenUpdate = (issue) => {
         setOpenUpdateIssue(true);

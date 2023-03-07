@@ -25,8 +25,6 @@ export const WorkCompleted14Days = ({ usersIssue }) => {
 
     }, [usersIssue])
 
-    console.log(taskCompleted)
-
     return (<>
         <Box marginBottom='20px'>
             <Typography variant="subtitle" fontWeight='600'>No. of Tasks {Object.keys(taskCompleted)} in the last 14 days</Typography>

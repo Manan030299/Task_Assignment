@@ -42,8 +42,6 @@ export const UpdateIssue = (props) => {
     return day + ', ' + date.getDate() + ' ' + month + ' ' + date.getFullYear() + ' | ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
    }
 
-   console.log(typeof(getFormattedDate(selectedIssue.createdOn)))
-
     return (
         <>
             <Dialog open={handleUpdateOpen} maxWidth='lg' fullWidth>
@@ -106,7 +104,7 @@ export const UpdateIssue = (props) => {
                         <Box marginTop='10px'>
                             <Grid gap={3} display='flex' justifyContent='right'>
                                 <Grid item>
-                                    <Button variant='contained' onClick={handleUpdate}>Modify</Button>
+                                    <Button variant='contained' disabled={selectedIssue? false : true} onClick={handleUpdate}>Modify</Button>
                                 </Grid>
                                 <Grid item>
                                     <Button variant='contained' onClick={handleUpdateClose}>Cancel</Button>
