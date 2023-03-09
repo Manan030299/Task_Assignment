@@ -129,7 +129,7 @@ export const ProfileSetting = () => {
                     <Divider />
                     <List disablePadding>
                         {['Account'].map((text, index) => (
-                            <ListItem key={text} disablePadding>
+                            <ListItem key={`text_${index}`} disablePadding>
                                 <ListItemButton sx={{ padding: '12px', }}>
                                     <ListItemIcon sx={{ color: 'text.secondary' }}>
                                         {index % 2 === 0 ? <HouseIcon /> : <HouseIcon />}
@@ -150,17 +150,17 @@ export const ProfileSetting = () => {
                     <FormControl>
                         <Typography marginBottom='20px' variant='h4'>Account Settings</Typography>
                         <Box marginBottom='35px'>
-                            <TextField sx={{ margin: '0px 10px 0px 0px', width: '280px' }} variant='outlined' onChange={onHandleChange} name='firstName' error={errorMessages.firstName} value={profileInput.firstName} label='First name' />
-                            <TextField sx={{ margin: '0px 0px 0px 5px', width: '280px' }} variant='outlined' onChange={onHandleChange} name='lastName' error={errorMessages.lastName} value={profileInput.lastName} label='Last name' />
+                            <TextField sx={{ margin: '0px 10px 0px 0px', width: '280px' }} variant='outlined' onChange={onHandleChange} name='firstName' value={profileInput.firstName} label='First name' />
+                            <TextField sx={{ margin: '0px 0px 0px 5px', width: '280px' }} variant='outlined' onChange={onHandleChange} name='lastName' value={profileInput.lastName} label='Last name' />
                         </Box>
-                        <TextField sx={{ margin: '0px 0px 25px 0px', width: '575px' }} variant='outlined' onChange={onHandleChange} type='email' name='email' error={errorMessages.email} value={profileInput.email} label='Email address' />
+                        <TextField sx={{ margin: '0px 0px 25px 0px', width: '575px' }} variant='outlined' onChange={onHandleChange} type='email' name='email' value={profileInput.email} label='Email address' />
                         <Link style={{cursor:'pointer'}} onClick={handleClickOpen} marginBottom='30px'>Change password</Link>
                         <Dialog open={openPass}>
                             <Box sx={{ padding: '30px', display:'flex', flexDirection:'column'}}>
                                 <Typography variant='h5' marginBottom='10px'>Change password</Typography>
                                 <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' type='password' name='password' label='Current Password' />
-                                <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' onChange={onHandleChange} type='password' name='password' error={errorMessages.password} value={profileInput.password} label='New Password' />
-                                <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' onChange={onHandleChange} type='password' name='confirmPassword' error={errorMessages.confirmPassword} value={profileInput.confirmPassword} label='Confirm New password' />
+                                <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' onChange={onHandleChange} type='password' name='password' value={profileInput.password} label='New Password' />
+                                <TextField sx={{ margin: '0px 0px 20px 0px', width: '375px' }} variant='outlined' onChange={onHandleChange} type='password' name='confirmPassword' value={profileInput.confirmPassword} label='Confirm New password' />
                                 <Box sx={{display:'flex', justifyContent:'center', marginTop:'5px'}}>
                                     <Button type='submit' variant="contained" sx={{ padding: '10px', fontSize: '1rem', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', width: '130px', margin: '0px 10px 0px 0px' }}>Confirm</Button>
                                     <Button type='submit' onClick={handleClose} variant="contained" sx={{ padding: '10px', fontSize: '1rem', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', width: '130px', margin: '0px 0px 0px 10px' }}>Cancel</Button>

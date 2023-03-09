@@ -11,10 +11,9 @@ import DoneIcon from '@mui/icons-material/Done';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { Editor} from "react-draft-wysiwyg";
 import { EditorState ,convertToRaw } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
 
 export const CreateIssueDialog = (props) => {
-    const {openCreate, handleClose, onHandleChange, createIssueInput, projectList, invitedUsers, writeUserData} = props
+    const {openCreate, handleClose, onHandleChange, createIssueInput, projectList, invitedUsers, writeUserData, handleSwitchChange, switchCheck} = props
 
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     
@@ -23,7 +22,6 @@ export const CreateIssueDialog = (props) => {
         const descriptionValue = convertToRaw(value.getCurrentContent())
         onHandleChange('description', descriptionValue.blocks[0].text)
     }
-
 
     const Android12Switch = styled(Switch)(({ theme }) => ({
         padding: 8,
@@ -69,8 +67,8 @@ export const CreateIssueDialog = (props) => {
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Project</Typography>
                             <Select onChange={(e) => {onHandleChange('project',e.target.value)}} name="project" value={createIssueInput.project} sx={{ marginBottom: '20px' }}>
-                                {projectList.map((projectName) => (
-                                    <MenuItem value={projectName}>{projectName}</MenuItem>
+                                {projectList.map((projectName, index) => (
+                                    <MenuItem key={`project_${index}`} value={projectName}>{projectName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -82,7 +80,7 @@ export const CreateIssueDialog = (props) => {
                                 <MenuItem value='bug'><FiberManualRecordIcon sx={{ bgcolor: '#fc3324', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Bug</MenuItem>
                                 <MenuItem value='epic'><BoltIcon sx={{ bgcolor: '#aa08e5', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Epic</MenuItem>
                             </Select>
-                            <Link href>Learn more</Link>
+                            <Link>Learn more</Link>
                         </FormControl>
                     </Box>
                     <Divider />
@@ -103,14 +101,14 @@ export const CreateIssueDialog = (props) => {
                         <Box sx={{ marginBottom: '20px' }}>
                             <Typography variant='subtitle1'>Description</Typography>
                             <Box border='1px solid #00000040' borderRadius='10px' padding='10px'>
-                            <Editor editorState={editorState} wrapperClassName="demo-wrapper" editorClassName="demo-editor" onEditorStateChange={onEditorStateChange} value={draftToHtml(convertToRaw(editorState.getCurrentContent()))} />
+                            <Editor editorState={editorState} wrapperClassName="demo-wrapper" editorClassName="demo-editor" onEditorStateChange={onEditorStateChange} />
                             </Box>
                         </Box>
                         <FormControl sx={{ marginBottom: '20px' }} fullWidth>
                             <Typography variant='subtitle1'>Assignee</Typography>
                             <Select onChange={(e) => {onHandleChange('assignee',e.target.value)}} name="assignee" value={createIssueInput.assignee} sx={{ marginBottom: '10px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((assignee, index) => (
-                                    <MenuItem value={assignee.firstName + ' ' + assignee.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
+                                    <MenuItem key={`issueDialog_${index}`} value={assignee.firstName + ' ' + assignee.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
                                 ))}
                             </Select>
                             <Link>Assign to me</Link>
@@ -119,7 +117,7 @@ export const CreateIssueDialog = (props) => {
                             <Typography variant='subtitle1'>Reporter</Typography>
                             <Select onChange={(e) => {onHandleChange('reporter',e.target.value)}} name="reporter" value={createIssueInput.reporter} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((reporter, index) => (
-                                    <MenuItem value={reporter.firstName + ' ' + reporter.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
+                                    <MenuItem key={`inite2_${index}`} value={reporter.firstName + ' ' + reporter.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -136,10 +134,10 @@ export const CreateIssueDialog = (props) => {
                     </Box>
                 </Box>
                 <Box padding='30px 50px' borderTop='3px solid #00000040'>
-                    <Grid container xs={12}>
+                    <Grid container >
                         <Grid item xs={9}>
                             <FormControlLabel
-                                control={<Android12Switch defaultChecked />}
+                                control={<Android12Switch checked={switchCheck} onChange={handleSwitchChange} />}
                                 label="Copy to next issue"
                             />
                         </Grid>

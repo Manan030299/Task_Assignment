@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Avatar } from '@mui/material'
 import { Box } from '@mui/material'
 import { Grid } from '@mui/material'
@@ -20,20 +20,34 @@ import BoltIcon from '@mui/icons-material/Bolt';
 import DoneIcon from '@mui/icons-material/Done';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { Editor } from 'react-draft-wysiwyg'
-import { EditorState ,convertToRaw } from 'draft-js';
+import { EditorState ,convertToRaw, ContentState} from 'draft-js';
+import htmlToDraft from 'html-to-draftjs'
 
 export const UpdateIssue = (props) => {
-    const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate, invitedUsers } = props;
+    const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate, invitedUsers, handleModified } = props;
 
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
     const onEditorStateChange = (value) => {
-       setEditorState(value)
-       const descriptionValue = convertToRaw(value.getCurrentContent())
-       handleIssueChange('description', descriptionValue.blocks[0].text)
-   }
+        setEditorState(value)
+        const descriptionValue = convertToRaw(value.getCurrentContent())
+        handleIssueChange('description', descriptionValue.blocks[0].text)
+    }
+
+    const htmlToDraftBlocks = (value) => {
+        const blocksFromHtml = htmlToDraft(value);
+        const { contentBlocks, entityMap } = blocksFromHtml;
+        const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+        const editorState = EditorState.createWithContent(contentState);
+        return editorState;
+    }
+    useEffect(() => {
+        if(selectedIssue.description){
+            setEditorState(htmlToDraftBlocks(selectedIssue.description));
+        }
+    }, [selectedIssue]);
 
    const getFormattedDate = (date1) => {
     const date = new Date(date1)
@@ -45,7 +59,7 @@ export const UpdateIssue = (props) => {
     return (
         <>
             <Dialog open={handleUpdateOpen} maxWidth='lg' fullWidth>
-                <Grid container xs={12}>
+                <Grid container>
                     <Grid item xs={7} display='flex' flexDirection='column' sx={{ padding: '20px' }}>
                         <TextField sx={{ marginBottom: '20px', }} onChange={(e) => handleIssueChange('summary', e.target.value)} value={selectedIssue.summary} name='summary' />
                         <FormControl fullWidth>
@@ -77,7 +91,7 @@ export const UpdateIssue = (props) => {
                             <InputLabel id="assignee">Assignee</InputLabel>
                             <Select onChange={(e) => handleIssueChange('assignee', e.target.value)} value={selectedIssue.assignee} name="assignee" labelId="assignee" label="Assignee" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((assignee, index) => (
-                                    <MenuItem value={assignee.firstName + ' ' + assignee.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
+                                    <MenuItem key={`invite_${index}`} value={assignee.firstName + ' ' + assignee.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -85,7 +99,7 @@ export const UpdateIssue = (props) => {
                             <InputLabel id="reporter">Reporter</InputLabel>
                             <Select onChange={(e) => handleIssueChange('reporter', e.target.value)} value={selectedIssue.reporter} name="reporter" labelId="reporter" label="Reporter" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((reporter, index) => (
-                                    <MenuItem value={reporter.firstName + ' ' + reporter.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
+                                    <MenuItem key={`invite1_${index}`} value={reporter.firstName + ' ' + reporter.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -104,7 +118,7 @@ export const UpdateIssue = (props) => {
                         <Box marginTop='10px'>
                             <Grid gap={3} display='flex' justifyContent='right'>
                                 <Grid item>
-                                    <Button variant='contained' disabled={selectedIssue? false : true} onClick={handleUpdate}>Modify</Button>
+                                    <Button variant='contained' disabled={handleModified} onClick={handleUpdate}>Modify</Button>
                                 </Grid>
                                 <Grid item>
                                     <Button variant='contained' onClick={handleUpdateClose}>Cancel</Button>

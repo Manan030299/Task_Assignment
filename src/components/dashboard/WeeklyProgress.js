@@ -13,7 +13,8 @@ export const WeeklyProgress = ({ usersIssue }) => {
         const currentWeekDay = todayDate.getDay();
         const lessDays = currentWeekDay === 0 ? 6 : currentWeekDay - 1
         const wkStart = new Date(new Date(todayDate).setDate(todayDate.getDate() - lessDays));
-        const wkEnd = new Date(new Date(wkStart).setDate(wkStart.getDate() + 6));
+        const wkEndDate = new Date(new Date(wkStart).setDate(wkStart.getDate() + 6));
+        const wkEnd = new Date(wkEndDate.setHours(23,59,59))
         const weekStart = months[wkStart.getMonth()] + ' ' + wkStart.getDate()
         const weekEnd = months[wkEnd.getMonth()] + ' ' + wkEnd.getDate()
         const year = todayDate.getFullYear()
@@ -25,7 +26,7 @@ export const WeeklyProgress = ({ usersIssue }) => {
         let pendingPercentage = 0
         issueList.forEach(issue => {
             const issueModifiedOn = new Date(issue.modifiedOn)
-            if (issueModifiedOn <= wkEnd && issueModifiedOn >= wkStart ) {
+            if (issueModifiedOn <= wkEnd && issueModifiedOn >= wkStart) {
                 completed += (issue.completed)
                 pending += issue.todo + issue.inprogress
                 total += issue.todo + issue.inprogress + issue.completed

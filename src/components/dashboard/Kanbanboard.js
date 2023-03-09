@@ -22,7 +22,7 @@ export const KanbanBoard = () => {
 
     const navigate = useNavigate();
 
-    const [projectList, setProjectList] = useState(['Project 1']);
+    const [projectList, setProjectList] = useState([]);
     const [todoList, setTodoList] = useState([]);
     const [inProgressList, setInprogressList] = useState([]);
     const [completedList, setCompletedList] = useState([]);
@@ -33,6 +33,10 @@ export const KanbanBoard = () => {
     const [openCreate, setOpenCreate] = useState(false);
     const [openInviteDialog, setOpenInviteDialog] = useState(false)
     const [inviteUserList, setInviteUserList] = useState([])
+    const [handleModified, setHandleModified] = useState(true)
+    const [switchCheck, setSwitchCheck] = useState(false);
+    const [openUpdateIssue, setOpenUpdateIssue] = useState(false);
+    const [selectedIssue, setSelectedIssue] = useState('');
 
     const [createIssueInput, setCreateIssueInput] = useState({
         project: '',
@@ -44,9 +48,16 @@ export const KanbanBoard = () => {
         assigneeId: '',
         reporter: '',
         priority: '',
-        createdOn: {},
-        modifiedOn: {}
+        createdOn: '',
+        modifiedOn: ''
     })
+
+    useEffect(() =>{
+        onValue(ref(database, 'projects/'), (snapshot) => {
+            const project = snapshot.val();
+            setProjectList(project)
+        });
+    },[])
 
     useEffect(() => {
         if (sessionStorage.getItem('uid')) {
@@ -107,16 +118,18 @@ export const KanbanBoard = () => {
             const todo = [];
             const inprogress = [];
             const completed = [];
-            const issuesList = Object.values(data)
-            issuesList.forEach(issue => {
-                if (issue.status === "todo") {
-                    todo.push(issue)
-                } else if (issue.status === "inprogress") {
-                    inprogress.push(issue)
-                } else {
-                    completed.push(issue);
-                }
-            })
+            if (data) {
+                const issuesList = Object.values(data)
+                issuesList.forEach(issue => {
+                    if (issue.status === "todo") {
+                        todo.push(issue)
+                    } else if (issue.status === "inprogress") {
+                        inprogress.push(issue)
+                    } else {
+                        completed.push(issue);
+                    }
+                })
+            }
             setTodoList([...todo])
             setInprogressList([...inprogress])
             setCompletedList([...completed])
@@ -132,10 +145,7 @@ export const KanbanBoard = () => {
     const handleUpdate = () => {
         const updatesIssue = {};
         updatesIssue['/createIssue/' + selectedIssue.id] = selectedIssue;
-        if(updatesIssue){
-            selectedIssue.modifiedOn = new Date()
-        }
-        console.log(updatesIssue)
+        selectedIssue.modifiedOn = new Date()
         handleCloseUpdate()
         return update(ref(database), updatesIssue);
     }
@@ -161,17 +171,53 @@ export const KanbanBoard = () => {
             createIssueInput.createdOn = new Date()
             updates['/createIssue/' + createNewIssue.id] = createNewIssue;
             toast('Issue create successfully')
-            setCreateIssueInput('')
-            handleClose()
+            setCreateIssueInput({
+                project: '',
+                issueType: '',
+                status: '',
+                summary: '',
+                description: '',
+                assignee: '',
+                assigneeId: '',
+                reporter: '',
+                priority: '',
+                createdOn: '',
+                modifiedOn: ''
+            })
+            if(switchCheck === true){
+                setOpenCreate(true)
+            }else{
+                handleClose()
+            }
             return update(ref(database), updates);
         }
     }
 
-    const [openUpdateIssue, setOpenUpdateIssue] = useState(false);
-    const [selectedIssue, setSelectedIssue] = useState('');
+    const handleOpen = () => {
+        setOpenCreate(true);
+    };
+
+    const handleClose = () => {
+        setOpenCreate(false);
+        setCreateIssueInput({
+            project: '',
+            issueType: '',
+            status: '',
+            summary: '',
+            description: '',
+            assignee: '',
+            assigneeId: '',
+            reporter: '',
+            priority: '',
+            createdOn: '',
+            modifiedOn: ''
+        })
+        setSwitchCheck(false)
+    };
 
     const handleIssueChange = (name, value) => {
-        setSelectedIssue({ ...selectedIssue, [name]: value })    
+        setSelectedIssue({ ...selectedIssue, [name]: value })  
+        setHandleModified(false)
     }
 
     const handleOpenUpdate = (issue) => {
@@ -181,15 +227,7 @@ export const KanbanBoard = () => {
 
     const handleCloseUpdate = () => {
         setOpenUpdateIssue(false);
-    };
-
-    const handleOpen = () => {
-        setOpenCreate(true);
-    };
-
-    const handleClose = () => {
-        setOpenCreate(false);
-        setCreateIssueInput('')
+        setHandleModified(true)
     };
 
     const handleOpenInviteDialog = () => {
@@ -203,6 +241,10 @@ export const KanbanBoard = () => {
     const handleCardOption = () => {
 
     }
+
+    const handleSwitchChange = (event) => {
+        setSwitchCheck(event.target.checked);
+      };
 
     const mode = useContext(ThemeContext)
 
@@ -231,7 +273,7 @@ export const KanbanBoard = () => {
                             </Box>
                             <Box display='inline-flex' marginLeft='10px' marginTop='-2px'>
                                 {invitedUsers.map((name, index) => (
-                                    <Tooltip arrow title={name.firstName + ' ' + name.lastName}>
+                                    <Tooltip key={`i_${index}`} arrow title={name.firstName + ' ' + name.lastName}>
                                         <AvatarGroup sx={{ marginLeft: '2.5px' }}>
                                             <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{name.firstName[0]}</Avatar>
                                         </AvatarGroup>
@@ -258,15 +300,15 @@ export const KanbanBoard = () => {
                             </FormControl>
                         </Box>
                     </Box>
-                    <Grid container gap={3} xs={12} marginTop='30px'>
+                    <Grid container gap={3} marginTop='30px'>
                         <Grid item xs={3}>
                             <Card sx={{ textAlign: 'Left', borderTopLeftRadius: '10px', borderTopRightRadius: '10px', padding: '10px' }}>
                                 <Typography variant='subtitle2'>TO DO</Typography>
                             </Card>
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px', }}>
                                 {todoList.map((issue, index) => (
-                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px', }}>
-                                        <Grid container xs={12}>
+                                    <Card key={`todo_${index}`} onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px', }}>
+                                        <Grid container>
                                             <Grid item xs={10}>
                                                 <Typography variant='h6' fontWeight='500'>{issue.summary}</Typography>
                                             </Grid>
@@ -274,7 +316,7 @@ export const KanbanBoard = () => {
                                                 <Button onClick={handleCardOption}><MoreVertIcon /></Button>
                                             </Grid>
                                         </Grid>
-                                        <Grid container xs={12} marginTop='10px'>
+                                        <Grid container marginTop='10px'>
                                             <Grid item xs={3}>
                                                 <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
                                             </Grid>
@@ -300,8 +342,8 @@ export const KanbanBoard = () => {
                             </Card>
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px' }}>
                                 {inProgressList.map((issue, index) => (
-                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
-                                        <Grid container xs={12}>
+                                    <Card key={`inprogress_${index}`} onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
+                                        <Grid container>
                                             <Grid item xs={10}>
                                                 <Typography variant='h6' fontWeight='500'>{issue.summary}</Typography>
                                             </Grid>
@@ -309,7 +351,7 @@ export const KanbanBoard = () => {
                                                 <Button onClick={handleCardOption}><MoreVertIcon /></Button>
                                             </Grid>
                                         </Grid>
-                                        <Grid container xs={12} marginTop='10px'>
+                                        <Grid container marginTop='10px'>
                                             <Grid item xs={3}>
                                                 <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
                                             </Grid>
@@ -333,8 +375,8 @@ export const KanbanBoard = () => {
                             </Card>
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px' }}>
                                 {completedList.map((issue, index) => (
-                                    <Card onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
-                                        <Grid container xs={12}>
+                                    <Card key={`complete_${index}`} onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px' }}>
+                                        <Grid container>
                                             <Grid item xs={10}>
                                                 <Typography variant='h6' fontWeight='500'>{issue.summary}</Typography>
                                             </Grid>
@@ -342,7 +384,7 @@ export const KanbanBoard = () => {
                                                 <Button onClick={handleCardOption}><MoreVertIcon /></Button>
                                             </Grid>
                                         </Grid>
-                                        <Grid container xs={12} marginTop='10px'>
+                                        <Grid container marginTop='10px'>
                                             <Grid item xs={3}>
                                                 <Typography sx={{ bgcolor: mode === 'light' ? 'background.light' : 'background.dark', width: 'max-content', padding: '1px 8px', borderRadius: '5px' }} variant='h6' fontWeight='500'>{issue.project}</Typography>
                                             </Grid>
@@ -361,9 +403,9 @@ export const KanbanBoard = () => {
                             </Card>
                         </Grid>
                     </Grid>
-                    <UpdateIssue handleUpdateOpen={openUpdateIssue} handleUpdateClose={handleCloseUpdate} selectedIssue={selectedIssue} handleIssueChange={handleIssueChange} handleUpdate={handleUpdate} invitedUsers={invitedUsers} />
+                    <UpdateIssue handleUpdateOpen={openUpdateIssue} handleUpdateClose={handleCloseUpdate} selectedIssue={selectedIssue} handleIssueChange={handleIssueChange} handleUpdate={handleUpdate} invitedUsers={invitedUsers} handleModified={handleModified} />
                     <Box margin='10px'>
-                        <CreateIssueDialog openCreate={openCreate} handleClose={handleClose} onHandleChange={onHandleChange} createIssueInput={createIssueInput} projectList={projectList} invitedUsers={invitedUsers} writeUserData={writeUserData} />
+                        <CreateIssueDialog openCreate={openCreate} handleClose={handleClose} onHandleChange={onHandleChange} createIssueInput={createIssueInput} projectList={projectList} invitedUsers={invitedUsers} writeUserData={writeUserData} handleSwitchChange={handleSwitchChange} switchCheck={switchCheck} />
                     </Box>
                     <Box>
                         <InviteUserDialog handleCloseInviteDialog={handleCloseInviteDialog} openInviteDialog={openInviteDialog} inviteUserList={inviteUserList} />

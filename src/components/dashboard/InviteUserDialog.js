@@ -56,14 +56,14 @@ export default function InviteUserDialog(props) {
                 renderValue={(selected) => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, }}>
                     {selected.map((value, index) => (
-                      <Chip  label={<Box sx={{display:'inline-flex', alignItems:'baseline',}}><Avatar sx={{marginRight:'5px', fontSize:'1rem', height:'25px', width:'25px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{value.firstName[0]}</Avatar>{value.email}</Box>} />
+                      <Chip key={`chip_${index}`} label={<Box sx={{display:'inline-flex', alignItems:'baseline',}}><Avatar sx={{marginRight:'5px', fontSize:'1rem', height:'25px', width:'25px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{value.firstName[0]}</Avatar>{value.email}</Box>} />
                     ))}
                   </Box>
                 )}
                 MenuProps={MenuProps}
               >
                 {inviteUserList.map((name, index) => (
-                  <MenuItem value={name} sx={{display:'inline-flex', alignItems:'baseline', width:'100%'}}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{name.firstName[0]}</Avatar>{name.email}</MenuItem>
+                  <MenuItem key={`menu_${index}`} value={name} sx={{display:'inline-flex', alignItems:'baseline', width:'100%'}}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{name.firstName[0]}</Avatar>{name.email}</MenuItem>
                 ))}
               </Select>
               <Grid gap={3} display='flex' justifyContent='right'>

@@ -29,7 +29,7 @@ export const DashBoard = () => {
     const [teamMembers, setTeamMembers] = useState([])
     const [userPermissions, setUserPermissions] = useState([])
     const [usersIssue, setUsersIssue] = useState([])
-    const [openCreate, setOpenCreate] = useState(false);
+    // const [openCreate, setOpenCreate] = useState(false);
 
     useEffect(() => {
         onValue(ref(database, 'createIssue/'), (snapshot) => {
@@ -97,9 +97,9 @@ export const DashBoard = () => {
 
     const createTask = ['Task Assignment 1', 'Task Assignment 2', 'Task Assignment 3']
    
-    const handleOpen = () => {
-        setOpenCreate(true);
-    };
+    // const handleOpen = () => {
+    //     setOpenCreate(true);
+    // };
 
     const mode = useContext(ThemeContext)
 
@@ -114,7 +114,7 @@ export const DashBoard = () => {
                         <FormGroup name="use-radio-group" defaultValue="first">
                             <Box marginBottom='15px'>
                                 {createTask.map((task, index) => (
-                                    <Grid container xs={12}>
+                                    <Grid key={`task_${index}`} container>
                                         <Grid item xs={7}>
                                             <FormControlLabel value={task} label={task} control={<Checkbox sx={{ borderRadius: '50%' }} />} />
                                         </Grid>
@@ -128,21 +128,21 @@ export const DashBoard = () => {
                         </FormGroup>
                         {userPermissions.create_tickets ?
                             (<Box marginTop='20px'>
-                                <Button variant='contained' onClick={handleOpen} fullWidth size='large' sx={{ fontSize: '1rem', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', bgcolor: blue[500], color: 'light' ? '#FFF' : '' }}>Create Task</Button>
+                                <Button variant='contained' fullWidth size='large' sx={{ fontSize: '1rem', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', bgcolor: blue[500], color: 'light' ? '#FFF' : '' }}>Create Task</Button>
                             </Box>) : ('')}
                     </Box>
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
                     <Typography variant="subtitle" fontWeight='600'>Task Progress</Typography>
-                    {usersIssue.map((issue) => (
-                        <Box marginTop='20px'>
+                    {usersIssue.map((issue, index) => (
+                        <Box key={`issue_${index}`} marginTop='20px'>
                             <Typography variant="subtitle2">{issue.assignee}</Typography>
                             <LinearBarProgress todo={issue.todo} inProgress={issue.inprogress} completed={issue.completed} sx={{ height: '6px', borderRadius: '10px', marginBottom: '20px' }} variant='determinate' />
                         </Box>
                     ))}
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
-                       <WeeklyProgress usersIssue={usersIssue} />
+                    <WeeklyProgress usersIssue={usersIssue} />
                 </Card>
                 <Card sx={{ padding: '20px', borderRadius: '8px' }}>
                     <Box marginBottom='10px'>
@@ -171,7 +171,7 @@ export const DashBoard = () => {
                     </Box>
                     <Box marginTop='10px'>
                         {usersList.map((user, index) => (
-                            <Grid container xs={12} marginBottom='20px'>
+                            <Grid key={`user_${index}`} container marginBottom='20px'>
                                 <Grid item xs={1.5}>
                                     <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{user[0]}</Avatar>
                                 </Grid>
@@ -181,7 +181,7 @@ export const DashBoard = () => {
                             </Grid>
                         ))}
                         {userPermissions.manage_user ? (
-                            <Grid container xs={12}>
+                            <Grid container>
                                 <Grid item xs={1.5}>
                                     <Avatar sx={{ bgcolor: green[500] }}><PersonAddIcon /></Avatar>
                                 </Grid>
