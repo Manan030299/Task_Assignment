@@ -45,7 +45,7 @@ export const PendingTask = ({ usersIssue }) => {
         const issueData = []
         usersIssue.forEach(issue => {
             const index = issueData.findIndex((issue1, i) => {
-                return issue1.assignee === issue.assignee
+                return issue1.assigneeId === issue.assigneeId
             })
             if (index !== -1) {
                 issueData[index][issue.assigne] += 1

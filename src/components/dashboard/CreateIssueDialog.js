@@ -13,14 +13,14 @@ import { Editor} from "react-draft-wysiwyg";
 import { EditorState , convertToRaw } from 'draft-js';
 
 export const CreateIssueDialog = (props) => {
-    const {openCreate, handleClose, onHandleChange, createIssueInput, projectList, invitedUsers, writeUserData, handleSwitchChange, switchCheck} = props
+    const {openCreate, handleClose, onHandleChange, createIssueInput, projectList, invitedUsers, writeUserData, handleSwitchChange, switchCheck, onHandleDescriptionChange} = props
 
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     
      const onEditorStateChange = (value) => {
         setEditorState(value)
         const descriptionValue = convertToRaw(value.getCurrentContent())
-        onHandleChange('description', descriptionValue.blocks[0].text)
+        onHandleDescriptionChange('description', descriptionValue.blocks[0].text)
     }
 
     const Android12Switch = styled(Switch)(({ theme }) => ({
@@ -66,7 +66,7 @@ export const CreateIssueDialog = (props) => {
                     <Box marginBottom='20px'>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Project</Typography>
-                            <Select onChange={(e) => {onHandleChange('project',e.target.value)}} name="project" value={createIssueInput.project} sx={{ marginBottom: '20px' }}>
+                            <Select onChange={onHandleChange} name="project" value={createIssueInput.project} sx={{ marginBottom: '20px' }}>
                                 {projectList.map((projectName, index) => (
                                     <MenuItem key={`project_${index}`} value={projectName}>{projectName}</MenuItem>
                                 ))}
@@ -74,7 +74,7 @@ export const CreateIssueDialog = (props) => {
                         </FormControl>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Issue type</Typography>
-                            <Select onChange={(e) => {onHandleChange('issueType',e.target.value)}} name="issueType" value={createIssueInput.issueType} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'initial',}}}>
+                            <Select onChange={onHandleChange} name="issueType" value={createIssueInput.issueType} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'initial',}}}>
                                 <MenuItem value='STORY'><BookmarkIcon sx={{ bgcolor: '#30ca3b', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px',marginRight:'10px' }} />Story</MenuItem>
                                 <MenuItem value='TASK'><DoneIcon sx={{ bgcolor: '#3e9fdf', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Task</MenuItem>
                                 <MenuItem value='BUG'><FiberManualRecordIcon sx={{ bgcolor: '#fc3324', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Bug</MenuItem>
@@ -87,7 +87,7 @@ export const CreateIssueDialog = (props) => {
                     <Box marginTop='20px'>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Status</Typography>
-                            <Select onChange={(e) => {onHandleChange('status',e.target.value)}} name="status" value={createIssueInput.status} sx={{ marginBottom: '20px' }}>
+                            <Select onChange={onHandleChange} name="status" value={createIssueInput.status} sx={{ marginBottom: '20px' }}>
                                 <MenuItem value='TODO'>TO DO</MenuItem>
                                 <MenuItem value='INPROGRESS'>IN PROGRESS</MenuItem>
                                 <MenuItem value='COMPLETED'>COMPLETED</MenuItem>
@@ -95,7 +95,7 @@ export const CreateIssueDialog = (props) => {
                         </FormControl>
                         <FormControl sx={{ marginBottom: '20px' }} fullWidth>
                             <Typography variant='subtitle1'>Summary</Typography>
-                            <OutlinedInput onChange={(e) => {onHandleChange('summary',e.target.value)}} name="summary" value={createIssueInput.summary} />
+                            <OutlinedInput onChange={onHandleChange} name="summary" value={createIssueInput.summary} />
                             <FormHelperText>This is the issue's initial status upon creation</FormHelperText>
                         </FormControl>
                         <Box sx={{ marginBottom: '20px' }}>
@@ -106,7 +106,7 @@ export const CreateIssueDialog = (props) => {
                         </Box>
                         <FormControl sx={{ marginBottom: '20px' }} fullWidth>
                             <Typography variant='subtitle1'>Assignee</Typography>
-                            <Select onChange={(e) => {onHandleChange('assigneeId',e.target.value)}} name="assigneeId" value={createIssueInput.assigneeId} sx={{ marginBottom: '10px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
+                            <Select onChange={onHandleChange} name="assigneeId" value={createIssueInput.assigneeId} sx={{ marginBottom: '10px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((assignee, index) => (
                                     <MenuItem key={`issueDialog_${index}`} value={assignee.uid}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
                                 ))}
@@ -115,7 +115,7 @@ export const CreateIssueDialog = (props) => {
                         </FormControl>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Reporter</Typography>
-                            <Select onChange={(e) => {onHandleChange('reporterId',e.target.value)}} name="reporterId" value={createIssueInput.reporterId} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
+                            <Select onChange={onHandleChange} name="reporterId" value={createIssueInput.reporterId} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((reporter, index) => (
                                     <MenuItem key={`inite2_${index}`} value={reporter.uid}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
                                 ))}
@@ -123,7 +123,7 @@ export const CreateIssueDialog = (props) => {
                         </FormControl>
                         <FormControl fullWidth>
                             <Typography variant='subtitle1'>Priority</Typography>
-                            <Select onChange={(e) => {onHandleChange('priority',e.target.value)}} name="priority" value={createIssueInput.priority} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'flex-end',}}}>
+                            <Select onChange={onHandleChange} name="priority" value={createIssueInput.priority} sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'flex-end',}}}>
                                 <MenuItem value='HIGHEST'><KeyboardDoubleArrowUpIcon />Highest</MenuItem>
                                 <MenuItem value='HIGH'><KeyboardArrowUpIcon />High</MenuItem>
                                 <MenuItem value='MEDIUM'><DragHandleIcon />Medium</MenuItem>

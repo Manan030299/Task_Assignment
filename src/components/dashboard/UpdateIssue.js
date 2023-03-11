@@ -24,7 +24,7 @@ import { EditorState ,convertToRaw, ContentState} from 'draft-js';
 import htmlToDraft from 'html-to-draftjs'
 
 export const UpdateIssue = (props) => {
-    const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate, invitedUsers, handleModified } = props;
+    const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate, invitedUsers, handleModified, handleDescriptionIssueChange } = props;
 
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
     
@@ -40,7 +40,7 @@ export const UpdateIssue = (props) => {
     const onEditorStateChange = (value) => {
         setEditorState(value)
         const descriptionValue = convertToRaw(value.getCurrentContent())
-        handleIssueChange('description', descriptionValue.blocks[0].text)
+        handleDescriptionIssueChange('description', descriptionValue.blocks[0].text)
     }
 
     const htmlToDraftBlocks = (value) => {
@@ -63,10 +63,10 @@ export const UpdateIssue = (props) => {
             <Dialog open={handleUpdateOpen} maxWidth='lg' fullWidth>
                 <Grid container>
                     <Grid item xs={7} display='flex' flexDirection='column' sx={{ padding: '20px' }}>
-                        <TextField sx={{ marginBottom: '20px', }} onChange={(e) => handleIssueChange('summary', e.target.value)} value={selectedIssue.summary} name='summary' />
+                        <TextField sx={{ marginBottom: '20px', }} onChange={handleIssueChange} value={selectedIssue.summary} name='summary' />
                         <FormControl fullWidth>
                             <InputLabel id="issuetype">Issue Type</InputLabel>
-                            <Select onChange={(e) => handleIssueChange('issueType', e.target.value)} value={selectedIssue.issueType} name="issueType" labelId="issuetype" label="Issue Type" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'initial',}}}>
+                            <Select onChange={handleIssueChange} value={selectedIssue.issueType} name="issueType" labelId="issuetype" label="Issue Type" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'initial',}}}>
                                 <MenuItem value='STORY'><BookmarkIcon sx={{ bgcolor: '#30ca3b', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px', }} />Story</MenuItem>
                                 <MenuItem value='TASK'><DoneIcon sx={{ bgcolor: '#3e9fdf', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Task</MenuItem>
                                 <MenuItem value='BUG'><FiberManualRecordIcon sx={{ bgcolor: '#fc3324', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Bug</MenuItem>
@@ -83,7 +83,7 @@ export const UpdateIssue = (props) => {
                     <Grid item xs={5} display='flex' flexDirection='column' sx={{ padding: '20px' }}>
                         <FormControl fullWidth>
                             <InputLabel id="status">Status</InputLabel>
-                            <Select onChange={(e) => handleIssueChange('status', e.target.value)} value={selectedIssue.status} name="status" labelId="status" label="Status" sx={{ marginBottom: '20px' }}>
+                            <Select onChange={handleIssueChange} value={selectedIssue.status} name="status" labelId="status" label="Status" sx={{ marginBottom: '20px' }}>
                                 <MenuItem value='TODO'>TO DO</MenuItem>
                                 <MenuItem value='INPROGRESS'>IN PROGRESS</MenuItem>
                                 <MenuItem value='COMPLETED'>COMPLETED</MenuItem>
@@ -91,7 +91,7 @@ export const UpdateIssue = (props) => {
                         </FormControl>
                         <FormControl fullWidth>
                             <InputLabel id="assignee">Assignee</InputLabel>
-                            <Select onChange={(e) => handleIssueChange('assigneeId', e.target.value)} value={selectedIssue.assigneeId} name="assigneeId" labelId="assignee" label="Assignee" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
+                            <Select onChange={handleIssueChange} value={selectedIssue.assigneeId} name="assigneeId" labelId="assignee" label="Assignee" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((assignee, index) => (
                                     <MenuItem key={`invite_${index}`} value={assignee.uid}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
                                 ))}
@@ -99,7 +99,7 @@ export const UpdateIssue = (props) => {
                         </FormControl>
                         <FormControl fullWidth>
                             <InputLabel id="reporter">Reporter</InputLabel>
-                            <Select onChange={(e) => handleIssueChange('reporterId', e.target.value)} value={selectedIssue.reporterId} name="reporterId" labelId="reporter" label="Reporter" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
+                            <Select onChange={handleIssueChange} value={selectedIssue.reporterId} name="reporterId" labelId="reporter" label="Reporter" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((reporter, index) => (
                                     <MenuItem key={`invite1_${index}`} value={reporter.uid}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
                                 ))}
@@ -107,7 +107,7 @@ export const UpdateIssue = (props) => {
                         </FormControl>
                         <FormControl fullWidth>
                             <InputLabel id="priority">Priority</InputLabel>
-                            <Select onChange={(e) => handleIssueChange('priority', e.target.value)} value={selectedIssue.priority} name="priority" defaultValue='Medium' labelId="priority" label="Priority" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'flex-end',}}}>
+                            <Select onChange={handleIssueChange} value={selectedIssue.priority} name="priority" defaultValue='Medium' labelId="priority" label="Priority" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'flex-end',}}}>
                                 <MenuItem value='HIGHEST'><KeyboardDoubleArrowUpIcon />Highest</MenuItem>
                                 <MenuItem value='HIGH'><KeyboardArrowUpIcon />High</MenuItem>
                                 <MenuItem value='MEDIUM'><DragHandleIcon />Medium</MenuItem>

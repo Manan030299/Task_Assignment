@@ -37,6 +37,7 @@ export const KanbanBoard = () => {
     const [switchCheck, setSwitchCheck] = useState(false);
     const [openUpdateIssue, setOpenUpdateIssue] = useState(false);
     const [selectedIssue, setSelectedIssue] = useState('');
+    const [assignee, setAssignee] = useState({})
 
     const [createIssueInput, setCreateIssueInput] = useState({
         project: '',
@@ -44,9 +45,7 @@ export const KanbanBoard = () => {
         status: '',
         summary: '',
         description: '',
-        assignee: '',
         assigneeId: '',
-        reporter: '',
         reporterId: '',
         priority: '',
         createdOn: '',
@@ -121,28 +120,47 @@ export const KanbanBoard = () => {
             if (data) {
                 const issuesList = Object.values(data)
                 issuesList.forEach(issue => {
-                    if (issue.status === "TODO") {
-                        todo.push(issue)
-                    } else if (issue.status === "INPROGRESS") {
-                        inprogress.push(issue)
-                    } else {
-                        completed.push(issue);
-                    }
+                    const user = invitedUsers.filter(userId => {
+                        return userId.uid === issue.assigneeId
+                    })
+                    user.forEach(user => {
+                        if (issue.status === "TODO") {
+                            todo.push(issue)
+                            issue['assignee'] = user.firstName + ' ' + user.lastName
+                        } else if (issue.status === "INPROGRESS") {
+                            inprogress.push(issue)
+                            issue['assignee'] = user.firstName + ' ' + user.lastName
+                        } else {
+                            completed.push(issue);
+                            issue['assignee'] = user.firstName + ' ' + user.lastName
+                        }
+                    })
                 })
             }
             setTodoList([...todo])
             setInprogressList([...inprogress])
             setCompletedList([...completed])
         });
-    }, [])
+    }, [invitedUsers])
 
     const database = getDatabase(app);
 
-    const onHandleChange = (name, value) => {
+    const onHandleChange = (e) => {
+        const{name, value} = e.target
         setCreateIssueInput({ ...createIssueInput, [name]: value })
     }
 
-    const handleIssueChange = (name, value) => {
+    const onHandleDescriptionChange = (name, value) => {
+        setCreateIssueInput({ ...createIssueInput, [name]: value })
+    }
+
+    const handleIssueChange = (e) => {
+        const{name, value} = e.target
+        setSelectedIssue({ ...selectedIssue, [name]: value })  
+        setHandleModified(false)
+    }
+
+    const handleDescriptionIssueChange = (name, value) => {
         setSelectedIssue({ ...selectedIssue, [name]: value })  
         setHandleModified(false)
     }
@@ -304,7 +322,6 @@ export const KanbanBoard = () => {
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px', }}>
                                 {todoList.map((issue, index) => (
                                     <Card key={`todo_${index}`} onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px', }}>
-                                        {console.log(issue)}
                                         <Grid container>
                                             <Grid item xs={10}>
                                                 <Typography variant='h6' fontWeight='500'>{issue.summary}</Typography>
@@ -324,8 +341,8 @@ export const KanbanBoard = () => {
 
                                             </Grid>
                                             <Grid item xs={3}>
-                                                <Tooltip arrow title={issue.assigneeId}>
-                                                    <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assigneeId[0]}</Avatar>
+                                                <Tooltip arrow title={issue.assignee}>
+                                                    <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
                                                 </Tooltip>
                                             </Grid>
                                         </Grid>
@@ -358,8 +375,8 @@ export const KanbanBoard = () => {
                                             <Grid item xs={3}>
 
                                             </Grid>
-                                            <Tooltip arrow title={issue.assigneeId}>
-                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assigneeId[0]}</Avatar>
+                                            <Tooltip arrow title={issue.assignee[0]}>
+                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
                                             </Tooltip>
                                         </Grid>
                                     </Card>
@@ -391,8 +408,8 @@ export const KanbanBoard = () => {
                                             <Grid item xs={3}>
 
                                             </Grid>
-                                            <Tooltip arrow title={issue.assigneeId}>
-                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assigneeId[0]}</Avatar>
+                                            <Tooltip arrow title={issue.assignee[0]}>
+                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
                                             </Tooltip>
                                         </Grid>
                                     </Card>
@@ -400,9 +417,9 @@ export const KanbanBoard = () => {
                             </Card>
                         </Grid>
                     </Grid>
-                    <UpdateIssue handleUpdateOpen={openUpdateIssue} handleUpdateClose={handleCloseUpdate} selectedIssue={selectedIssue} handleIssueChange={handleIssueChange} handleUpdate={handleUpdate} invitedUsers={invitedUsers} handleModified={handleModified} />
+                    <UpdateIssue handleUpdateOpen={openUpdateIssue} handleUpdateClose={handleCloseUpdate} selectedIssue={selectedIssue} handleIssueChange={handleIssueChange} handleUpdate={handleUpdate} invitedUsers={invitedUsers} handleModified={handleModified} handleDescriptionIssueChange={handleDescriptionIssueChange} />
                     <Box margin='10px'>
-                        <CreateIssueDialog openCreate={openCreate} handleClose={handleClose} onHandleChange={onHandleChange} createIssueInput={createIssueInput} projectList={projectList} invitedUsers={invitedUsers} writeUserData={writeUserData} handleSwitchChange={handleSwitchChange} switchCheck={switchCheck} />
+                        <CreateIssueDialog openCreate={openCreate} handleClose={handleClose} onHandleChange={onHandleChange} createIssueInput={createIssueInput} projectList={projectList} invitedUsers={invitedUsers} writeUserData={writeUserData} handleSwitchChange={handleSwitchChange} switchCheck={switchCheck} onHandleDescriptionChange={onHandleDescriptionChange} />
                     </Box>
                     <Box>
                         <InviteUserDialog handleCloseInviteDialog={handleCloseInviteDialog} openInviteDialog={openInviteDialog} inviteUserList={inviteUserList} />

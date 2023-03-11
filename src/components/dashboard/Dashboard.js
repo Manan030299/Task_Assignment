@@ -34,11 +34,8 @@ export const DashBoard = () => {
     useEffect(() => {
         onValue(ref(database, 'createIssue/'), (snapshot) => {
             const data = Object.values(snapshot.val());
-            console.log(data)
             onValue(ref(database, 'invitedUser/'), (snapshot) => {
                 const invitedUsersList = Object.values(snapshot.val());
-                console.log(invitedUsersList)
-
                 const issueList = []
                 data.forEach(issue => {
                     const index = issueList.findIndex((issue1, i) => {
@@ -52,6 +49,7 @@ export const DashBoard = () => {
                             issueList[index][issue.status.toLowerCase()] += 1
                         } else {
                             const issueObj = {
+                                assigneeId: issue.assigneeId,
                                 assignee: user.firstName + ' ' + user.lastName,
                                 todo: 0,
                                 inprogress: 0,
@@ -59,7 +57,6 @@ export const DashBoard = () => {
                                 createdOn: issue.createdOn,
                                 modifiedOn: issue.modifiedOn
                             }
-                            console.log(issueObj)
                             issueObj[issue.status.toLowerCase()] = 1
                             issueList.push(issueObj)
                             setUsersIssue(issueList)
@@ -69,8 +66,6 @@ export const DashBoard = () => {
             });
         });
     }, [])
-
-    console.log(usersIssue)
     
     const database = getDatabase(app);
     useEffect(() => {
@@ -109,10 +104,6 @@ export const DashBoard = () => {
     });
 
     const createTask = ['Task Assignment 1', 'Task Assignment 2', 'Task Assignment 3']
-   
-    // const handleOpen = () => {
-    //     setOpenCreate(true);
-    // };
 
     const mode = useContext(ThemeContext)
 
