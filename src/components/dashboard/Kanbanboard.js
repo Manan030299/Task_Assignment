@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import ResponsiveAppBar from '../../common/AppBar';
-import { Typography, Box, Toolbar, FormControl, Select, MenuItem, Grid, Button, Card, Avatar, Tooltip, AvatarGroup } from '@mui/material';
+import { Typography, Box, Toolbar, Grid, Button, Card, Avatar, Tooltip, AvatarGroup } from '@mui/material';
 import { ThemeContext } from '../../App';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { SearchIconWrapper } from './SearchBar';
@@ -47,9 +47,9 @@ export const KanbanBoard = () => {
         assignee: '',
         assigneeId: '',
         reporter: '',
+        reporterId: '',
         priority: '',
         createdOn: '',
-        modifiedOn: ''
     })
 
     useEffect(() =>{
@@ -121,9 +121,9 @@ export const KanbanBoard = () => {
             if (data) {
                 const issuesList = Object.values(data)
                 issuesList.forEach(issue => {
-                    if (issue.status === "todo") {
+                    if (issue.status === "TODO") {
                         todo.push(issue)
-                    } else if (issue.status === "inprogress") {
+                    } else if (issue.status === "INPROGRESS") {
                         inprogress.push(issue)
                     } else {
                         completed.push(issue);
@@ -140,6 +140,11 @@ export const KanbanBoard = () => {
 
     const onHandleChange = (name, value) => {
         setCreateIssueInput({ ...createIssueInput, [name]: value })
+    }
+
+    const handleIssueChange = (name, value) => {
+        setSelectedIssue({ ...selectedIssue, [name]: value })  
+        setHandleModified(false)
     }
 
     const handleUpdate = () => {
@@ -177,12 +182,10 @@ export const KanbanBoard = () => {
                 status: '',
                 summary: '',
                 description: '',
-                assignee: '',
                 assigneeId: '',
-                reporter: '',
+                reporterId: '',
                 priority: '',
                 createdOn: '',
-                modifiedOn: ''
             })
             if(switchCheck === true){
                 setOpenCreate(true)
@@ -205,20 +208,13 @@ export const KanbanBoard = () => {
             status: '',
             summary: '',
             description: '',
-            assignee: '',
             assigneeId: '',
-            reporter: '',
+            reporterId: '',
             priority: '',
             createdOn: '',
-            modifiedOn: ''
         })
         setSwitchCheck(false)
     };
-
-    const handleIssueChange = (name, value) => {
-        setSelectedIssue({ ...selectedIssue, [name]: value })  
-        setHandleModified(false)
-    }
 
     const handleOpenUpdate = (issue) => {
         setOpenUpdateIssue(true);
@@ -290,14 +286,14 @@ export const KanbanBoard = () => {
                                 ''
                             )}
 
-                            <Typography marginTop='20px' marginRight='10px' variant='subtitle2'>GROUP BY</Typography>
+                            {/* <Typography marginTop='20px' marginRight='10px' variant='subtitle2'>GROUP BY</Typography>
                             <FormControl sx={{ width: '150px' }}>
                                 <Select defaultValue='None'>
                                     <MenuItem value='None'>None</MenuItem>
                                     <MenuItem value='Assignee'>Assignee</MenuItem>
                                     <MenuItem value='Subtask'>Subtask</MenuItem>
                                 </Select>
-                            </FormControl>
+                            </FormControl> */}
                         </Box>
                     </Box>
                     <Grid container gap={3} marginTop='30px'>
@@ -308,6 +304,7 @@ export const KanbanBoard = () => {
                             <Card sx={{ marginTop: '40px', textAlign: 'Left', borderRadius: '10px', padding: '10px', }}>
                                 {todoList.map((issue, index) => (
                                     <Card key={`todo_${index}`} onClick={() => handleOpenUpdate(issue)} sx={{ padding: '20px 10px', marginBottom: '20px', }}>
+                                        {console.log(issue)}
                                         <Grid container>
                                             <Grid item xs={10}>
                                                 <Typography variant='h6' fontWeight='500'>{issue.summary}</Typography>
@@ -327,8 +324,8 @@ export const KanbanBoard = () => {
 
                                             </Grid>
                                             <Grid item xs={3}>
-                                                <Tooltip arrow title={issue.assignee}>
-                                                    <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
+                                                <Tooltip arrow title={issue.assigneeId}>
+                                                    <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assigneeId[0]}</Avatar>
                                                 </Tooltip>
                                             </Grid>
                                         </Grid>
@@ -361,8 +358,8 @@ export const KanbanBoard = () => {
                                             <Grid item xs={3}>
 
                                             </Grid>
-                                            <Tooltip arrow title={issue.assignee}>
-                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
+                                            <Tooltip arrow title={issue.assigneeId}>
+                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assigneeId[0]}</Avatar>
                                             </Tooltip>
                                         </Grid>
                                     </Card>
@@ -394,8 +391,8 @@ export const KanbanBoard = () => {
                                             <Grid item xs={3}>
 
                                             </Grid>
-                                            <Tooltip arrow title={issue.assignee}>
-                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assignee[0]}</Avatar>
+                                            <Tooltip arrow title={issue.assigneeId}>
+                                                <Avatar sx={{ bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245' }}>{issue.assigneeId[0]}</Avatar>
                                             </Tooltip>
                                         </Grid>
                                     </Card>

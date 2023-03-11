@@ -34,30 +34,43 @@ export const DashBoard = () => {
     useEffect(() => {
         onValue(ref(database, 'createIssue/'), (snapshot) => {
             const data = Object.values(snapshot.val());
-            const issueList = []
-            data.forEach(issue => {
-                const index = issueList.findIndex((issue1, i) => {
-                    return issue1.assignee === issue.assignee
+            console.log(data)
+            onValue(ref(database, 'invitedUser/'), (snapshot) => {
+                const invitedUsersList = Object.values(snapshot.val());
+                console.log(invitedUsersList)
+
+                const issueList = []
+                data.forEach(issue => {
+                    const index = issueList.findIndex((issue1, i) => {
+                        return issue1.assigneeId === issue.assigneeId
+                    })
+                    const assignee = invitedUsersList.filter(user => {
+                        return user.uid === issue.assigneeId
+                    })
+                    assignee.forEach(user => {
+                        if (index !== -1) {
+                            issueList[index][issue.status.toLowerCase()] += 1
+                        } else {
+                            const issueObj = {
+                                assignee: user.firstName + ' ' + user.lastName,
+                                todo: 0,
+                                inprogress: 0,
+                                completed: 0,
+                                createdOn: issue.createdOn,
+                                modifiedOn: issue.modifiedOn
+                            }
+                            console.log(issueObj)
+                            issueObj[issue.status.toLowerCase()] = 1
+                            issueList.push(issueObj)
+                            setUsersIssue(issueList)
+                        }
+                    })
                 })
-                if (index !== -1) {
-                    issueList[index][issue.status] += 1
-                } else {
-                    const issueObj = {
-                        id: issue.id,
-                        assignee: issue.assignee,
-                        todo: 0,
-                        inprogress: 0,
-                        completed: 0,
-                        createdOn: issue.createdOn,
-                        modifiedOn: issue.modifiedOn
-                    }
-                    issueObj[issue.status] = 1
-                    issueList.push(issueObj)
-                    setUsersIssue(issueList)
-                }
-            })
+            });
         });
     }, [])
+
+    console.log(usersIssue)
     
     const database = getDatabase(app);
     useEffect(() => {

@@ -27,6 +27,13 @@ export const UpdateIssue = (props) => {
     const { handleUpdateOpen, handleUpdateClose, selectedIssue, handleIssueChange, handleUpdate, invitedUsers, handleModified } = props;
 
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
+    
+    useEffect(() => {
+        if(selectedIssue.description){
+            setEditorState(htmlToDraftBlocks(selectedIssue.description));
+        }
+    }, [selectedIssue]);
+
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
@@ -43,11 +50,6 @@ export const UpdateIssue = (props) => {
         const editorState = EditorState.createWithContent(contentState);
         return editorState;
     }
-    useEffect(() => {
-        if(selectedIssue.description){
-            setEditorState(htmlToDraftBlocks(selectedIssue.description));
-        }
-    }, [selectedIssue]);
 
    const getFormattedDate = (date1) => {
     const date = new Date(date1)
@@ -65,10 +67,10 @@ export const UpdateIssue = (props) => {
                         <FormControl fullWidth>
                             <InputLabel id="issuetype">Issue Type</InputLabel>
                             <Select onChange={(e) => handleIssueChange('issueType', e.target.value)} value={selectedIssue.issueType} name="issueType" labelId="issuetype" label="Issue Type" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'initial',}}}>
-                                <MenuItem value='story'><BookmarkIcon sx={{ bgcolor: '#30ca3b', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px', }} />Story</MenuItem>
-                                <MenuItem value='task'><DoneIcon sx={{ bgcolor: '#3e9fdf', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Task</MenuItem>
-                                <MenuItem value='bug'><FiberManualRecordIcon sx={{ bgcolor: '#fc3324', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Bug</MenuItem>
-                                <MenuItem value='epic'><BoltIcon sx={{ bgcolor: '#aa08e5', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Epic</MenuItem>
+                                <MenuItem value='STORY'><BookmarkIcon sx={{ bgcolor: '#30ca3b', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px', }} />Story</MenuItem>
+                                <MenuItem value='TASK'><DoneIcon sx={{ bgcolor: '#3e9fdf', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Task</MenuItem>
+                                <MenuItem value='BUG'><FiberManualRecordIcon sx={{ bgcolor: '#fc3324', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Bug</MenuItem>
+                                <MenuItem value='EPIC'><BoltIcon sx={{ bgcolor: '#aa08e5', color: '#FFF', padding: '2px', borderRadius: '5px', fontSize: '16px', marginRight:'10px' }} />Epic</MenuItem>
                             </Select>
                         </FormControl>
                         <Box sx={{ marginBottom: '20px' }}>
@@ -82,39 +84,39 @@ export const UpdateIssue = (props) => {
                         <FormControl fullWidth>
                             <InputLabel id="status">Status</InputLabel>
                             <Select onChange={(e) => handleIssueChange('status', e.target.value)} value={selectedIssue.status} name="status" labelId="status" label="Status" sx={{ marginBottom: '20px' }}>
-                                <MenuItem value='todo'>TO DO</MenuItem>
-                                <MenuItem value='inprogress'>IN PROGRESS</MenuItem>
-                                <MenuItem value='completed'>COMPLETED</MenuItem>
+                                <MenuItem value='TODO'>TO DO</MenuItem>
+                                <MenuItem value='INPROGRESS'>IN PROGRESS</MenuItem>
+                                <MenuItem value='COMPLETED'>COMPLETED</MenuItem>
                             </Select>
                         </FormControl>
                         <FormControl fullWidth>
                             <InputLabel id="assignee">Assignee</InputLabel>
-                            <Select onChange={(e) => handleIssueChange('assignee', e.target.value)} value={selectedIssue.assignee} name="assignee" labelId="assignee" label="Assignee" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
+                            <Select onChange={(e) => handleIssueChange('assigneeId', e.target.value)} value={selectedIssue.assigneeId} name="assigneeId" labelId="assignee" label="Assignee" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((assignee, index) => (
-                                    <MenuItem key={`invite_${index}`} value={assignee.firstName + ' ' + assignee.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
+                                    <MenuItem key={`invite_${index}`} value={assignee.uid}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{assignee.firstName[0]}</Avatar>{assignee.firstName + ' ' + assignee.lastName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                         <FormControl fullWidth>
                             <InputLabel id="reporter">Reporter</InputLabel>
-                            <Select onChange={(e) => handleIssueChange('reporter', e.target.value)} value={selectedIssue.reporter} name="reporter" labelId="reporter" label="Reporter" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
+                            <Select onChange={(e) => handleIssueChange('reporterId', e.target.value)} value={selectedIssue.reporterId} name="reporterId" labelId="reporter" label="Reporter" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'baseline',}}}>
                                 {invitedUsers.map((reporter, index) => (
-                                    <MenuItem key={`invite1_${index}`} value={reporter.firstName + ' ' + reporter.lastName}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
+                                    <MenuItem key={`invite1_${index}`} value={reporter.uid}><Avatar sx={{marginRight:'10px', height:'35px', width:'35px', bgcolor: index % 2 === 0 ? '#2385ff' : '#f2d245'}}>{reporter.firstName[0]}</Avatar>{reporter.firstName + ' ' + reporter.lastName}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                         <FormControl fullWidth>
                             <InputLabel id="priority">Priority</InputLabel>
                             <Select onChange={(e) => handleIssueChange('priority', e.target.value)} value={selectedIssue.priority} name="priority" defaultValue='Medium' labelId="priority" label="Priority" sx={{ marginBottom: '20px', [`& .MuiSelect-select`]: {display:'inline-flex', alignItems:'flex-end',}}}>
-                                <MenuItem value='Highest'><KeyboardDoubleArrowUpIcon />Highest</MenuItem>
-                                <MenuItem value='High'><KeyboardArrowUpIcon />High</MenuItem>
-                                <MenuItem value='Medium'><DragHandleIcon />Medium</MenuItem>
-                                <MenuItem value='Low'><KeyboardArrowDownIcon />Low</MenuItem>
-                                <MenuItem value='Lowest'><KeyboardDoubleArrowDownIcon />Lowest</MenuItem>
+                                <MenuItem value='HIGHEST'><KeyboardDoubleArrowUpIcon />Highest</MenuItem>
+                                <MenuItem value='HIGH'><KeyboardArrowUpIcon />High</MenuItem>
+                                <MenuItem value='MEDIUM'><DragHandleIcon />Medium</MenuItem>
+                                <MenuItem value='LOW'><KeyboardArrowDownIcon />Low</MenuItem>
+                                <MenuItem value='LOWEST'><KeyboardDoubleArrowDownIcon />Lowest</MenuItem>
                             </Select>
                         </FormControl>
                             <Typography marginTop='0px' marginBottom='10px' variant='body2'>Created on: {getFormattedDate(selectedIssue.createdOn)}</Typography>
-                            <Typography marginTop='0px' marginBottom='10px' variant='body2'>Modified on: {getFormattedDate(selectedIssue.modifiedOn)}</Typography>
+                            {!selectedIssue.modifiedOn? '' : (<Typography marginTop='0px' marginBottom='10px' variant='body2'>Modified on: {getFormattedDate(selectedIssue.modifiedOn)}</Typography>)}
                         <Box marginTop='10px'>
                             <Grid gap={3} display='flex' justifyContent='right'>
                                 <Grid item>

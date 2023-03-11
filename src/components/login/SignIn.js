@@ -101,7 +101,7 @@ export const SignIn = () => {
           <Typography variant="h2" marginBottom='10px'>Sign in</Typography>
           <Typography variant="subtitle1" marginBottom='20px'>Sign in and start managing your candidates!</Typography>
           <TextField sx={{ margin: '0px 0px 10px 0px'}} helperText={errorMessages.email} type='email' name='email' value={signinInput.email} onChange={onHandleChange} label="Email Address" variant="outlined" />
-          <TextField sx={{ margin: '10px 0px 0px 0px'}} helperText={errorMessages.password} type='text' name='password' value={signinInput.password} onChange={onHandleChange} id="outlined-basic" label="Password" variant="outlined" />
+          <TextField sx={{ margin: '10px 0px 0px 0px'}} helperText={errorMessages.password} type='password' name='password' value={signinInput.password} onChange={onHandleChange} id="outlined-basic" label="Password" variant="outlined" />
           <Box >
             <FormControlLabel sx={{ marginRight: '45px' }} control={<Checkbox name='rememberMe' checked={rememberMe} onChange={handleCheck} />} label="Remember me" />
             <Link color={mode === 'light' ? 'black' : '#20DF7F'} underline='none' href=''>Forgot password?</Link>

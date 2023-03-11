@@ -150,8 +150,8 @@ export const SignUp = () => {
           </Box>
           <TextField sx={{ margin: '0px 0px 0px 0px', width: '350px' }} helperText={errorMessages.email} type='email' name='email' value={signupInput.email} onChange={onHandleChange} label="Email address" variant="outlined" required />
           <Box display='flex' flexDirection='column'>
-            <TextField sx={{ margin: '10px 0px 5px 0px', width: '350px' }} helperText={errorMessages.password} type='text' name='password' value={signupInput.password} onChange={onHandleChange} id="outlined-basic" label="New password" variant="outlined" required />
-            <TextField sx={{ margin: '5px 0px 10px 0px', width: '350px' }} helperText={errorMessages.confirmPassword} type='text' name='confirmPassword' value={signupInput.confirmPassword} onChange={onHandleChange} id="outlined-basic" label="Confirm new password" variant="outlined" required />
+            <TextField sx={{ margin: '10px 0px 5px 0px', width: '350px' }} helperText={errorMessages.password} type='password' name='password' value={signupInput.password} onChange={onHandleChange} id="outlined-basic" label="New password" variant="outlined" required />
+            <TextField sx={{ margin: '5px 0px 10px 0px', width: '350px' }} helperText={errorMessages.confirmPassword} type='password' name='confirmPassword' value={signupInput.confirmPassword} onChange={onHandleChange} id="outlined-basic" label="Confirm new password" variant="outlined" required />
           </Box>
           <Typography variant="subtitle1" marginBottom='15px'>Already a member? <Link color={mode === 'light' ? 'black' : '#20DF7F'} fontWeight='600' underline='none' onClick={goToLogin} style={{ cursor: 'pointer' }}>Log in</Link></Typography>
           <Button onClick={handleValidation} type='submit' variant="contained" sx={{ padding: '10px', fontSize: '1rem', fontWeight: '400', borderRadius: '10px', boxShadow: '0px 4px 4px 0px #0000004D', marginBottom: '20px' }}>Create Account</Button>
